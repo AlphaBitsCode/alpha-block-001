@@ -7,7 +7,7 @@ import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
 import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart } from "lucide-react";
+import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart, HelpCircle } from "lucide-react";
 import MetricsOverlay from "./MetricsOverlay";
 import TelemetryWidget from "./TelemetryWidget";
 import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
@@ -18,6 +18,8 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { Toaster } from "sonner";
 import UserNamePrompt from "./UserNamePrompt";
 import RobotControlsContent from "./RobotControlsContent";
+import { Button } from "@/components/ui/button";
+import SupportDialog from "./SupportDialog";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -74,6 +76,7 @@ const Dashboard: React.FC = () => {
   const [isHumidifierOn, setIsHumidifierOn] = useState(true);
   const [isLightOn, setIsLightOn] = useState(false);
   const [showRobotControls, setShowRobotControls] = useState(false);
+  const [showSupportDialog, setShowSupportDialog] = useState(false);
   const [cameraPosition, setCameraPosition] = useState<Position>({ x: 50, y: 50 });
 
   // Widget visibility state - only show metrics by default
@@ -139,6 +142,10 @@ const Dashboard: React.FC = () => {
     setShowRobotControls(true);
   };
 
+  const handleOpenSupportDialog = () => {
+    setShowSupportDialog(true);
+  };
+
   // Pre-load the RobotControlsContent to prevent flashing
   useEffect(() => {
     // This ensures the component is loaded before it's needed
@@ -157,6 +164,18 @@ const Dashboard: React.FC = () => {
       
       {/* User Name Prompt */}
       <UserNamePrompt />
+      
+      {/* Support Button */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <Button 
+          onClick={handleOpenSupportDialog} 
+          className="rounded-full bg-primary/80 hover:bg-primary shadow-lg flex items-center gap-2"
+          size="sm"
+        >
+          <HelpCircle size={16} />
+          Support
+        </Button>
+      </div>
       
       {/* Fixed MiniMap in bottom-left corner with updated background */}
       <div className="fixed bottom-4 left-4 z-40" ref={cameraPositionWidget.dragRef} 
@@ -229,7 +248,7 @@ const Dashboard: React.FC = () => {
             {/* Camera preview with refreshing image */}
             <div className="relative w-32 h-32 overflow-hidden rounded-md">
               <img 
-                src={`https://lakeview.secondbrains.tech/cam/office_3.jpg?t=${Date.now()}`} 
+                src={`https://lakeview.secondbrains.tech/cam/office_3.jpg?t=${Math.floor(Date.now() / 30000)}`} 
                 alt="Camera Feed"
                 className="w-full h-full object-cover"
               />
@@ -242,15 +261,23 @@ const Dashboard: React.FC = () => {
           <div className="flex justify-between items-center px-1 py-1">
             <div className="text-xs text-foreground font-medium">Camera Position</div>
             {/* Handle for drag */}
-            <div className="cursor-move bg-primary/30 rounded-sm px-2 text-xs text-foreground/80">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-6 text-xs px-2 py-0"
+              onClick={handleOpenRobotControls}
+            >
               Move
-            </div>
+            </Button>
           </div>
         </div>
       </div>
       
       {/* Robot Controls Dialog/Drawer */}
       <RobotControlDialog />
+      
+      {/* Support Dialog */}
+      <SupportDialog open={showSupportDialog} onOpenChange={setShowSupportDialog} />
       
       {/* Vertical Toolbar */}
       <VerticalToolbar 
@@ -313,7 +340,7 @@ const Dashboard: React.FC = () => {
             </TelemetryWidget>
           )}
           
-          {/* Graph Widget - Improved height */}
+          {/* Graph Widget - Fixed height */}
           {widgetToggles.graph && (
             <TelemetryWidget 
               title="Monitoring History" 
@@ -322,7 +349,7 @@ const Dashboard: React.FC = () => {
               onMouseDown={graphWidget.onMouseDown}
               ref={graphWidget.dragRef}
               widthClass="w-[500px]"
-              heightClass="h-[300px]"
+              heightClass="h-[320px]"
             >
               <MiniGraph data={mockGraphData} />
             </TelemetryWidget>
@@ -349,7 +376,7 @@ const Dashboard: React.FC = () => {
             </div>
           )}
           {widgetToggles.graph && (
-            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4 h-[300px]">
+            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4 h-[320px]">
               <MiniGraph data={mockGraphData} />
             </div>
           )}

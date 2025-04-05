@@ -14,6 +14,7 @@ interface TelemetryWidgetProps {
   onMinimizeClick?: () => void;
   onMouseDown?: (e: React.MouseEvent) => void;
   widthClass?: string;
+  heightClass?: string;
 }
 
 const TelemetryWidget = forwardRef<HTMLDivElement, TelemetryWidgetProps>(({
@@ -25,7 +26,8 @@ const TelemetryWidget = forwardRef<HTMLDivElement, TelemetryWidgetProps>(({
   isCollapsed = false,
   onMinimizeClick,
   onMouseDown,
-  widthClass = "w-80"
+  widthClass = "w-80",
+  heightClass = ""
 }, ref) => {
   if (isCollapsed) return null;
   
@@ -37,7 +39,7 @@ const TelemetryWidget = forwardRef<HTMLDivElement, TelemetryWidgetProps>(({
   
   return (
     <div 
-      className={`glassmorphism absolute rounded-lg overflow-hidden animate-fade-in shadow-lg border border-white/10 ${widthClass} ${className} z-20`}
+      className={`glassmorphism absolute rounded-lg overflow-hidden animate-fade-in shadow-lg border border-white/10 ${widthClass} ${heightClass} ${className} z-20`}
       style={positionStyle}
       ref={ref}
     >
