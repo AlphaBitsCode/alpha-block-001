@@ -15,11 +15,8 @@ import WidgetIcon from "./WidgetIcon";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Toaster } from "sonner";
-import MiniMap from "./MiniMap";
 import UserNamePrompt from "./UserNamePrompt";
-import NavigationMenuComponent from "./NavigationMenu";
 import RobotControlsContent from "./RobotControlsContent";
-import HarvestCountdown from "./HarvestCountdown";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -104,8 +101,14 @@ const Dashboard: React.FC = () => {
   });
   
   const graphWidget = useDraggable({ 
-    initialPosition: { x: window.innerWidth - 380, y: 320 },
+    initialPosition: { x: window.innerWidth - 400, y: 320 },
     bounds: { top: 70, right: window.innerWidth - 10 }
+  });
+  
+  // New draggable hook for camera position widget
+  const cameraPositionWidget = useDraggable({
+    initialPosition: { x: 20, y: window.innerHeight - 220 },
+    bounds: { bottom: window.innerHeight - 20, left: 10 }
   });
   
   const toggleHumidifier = () => {
@@ -149,10 +152,6 @@ const Dashboard: React.FC = () => {
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-3 md:px-6">
         <Header unitId="AB-001" startDate="Apr 1, 2025" cropName="Pink Oyster" />
-        <div className="flex items-center gap-4">
-          <HarvestCountdown harvestDate="2025-04-15T00:00:00" />
-          <NavigationMenuComponent />
-        </div>
       </div>
       
       {/* User Name Prompt */}
@@ -161,12 +160,18 @@ const Dashboard: React.FC = () => {
       {/* Toaster for notifications */}
       <Toaster position="top-center" />
       
-      {/* Fixed MiniMap in bottom-right corner */}
-      <div className="fixed bottom-4 right-4 z-40 flex gap-2">
+      {/* Fixed MiniMap in bottom-left corner */}
+      <div className="fixed bottom-4 left-4 z-40" ref={cameraPositionWidget.dragRef} 
+           style={{ 
+             position: 'absolute', 
+             left: `${cameraPositionWidget.position.x}px`, 
+             top: `${cameraPositionWidget.position.y}px`
+           }}
+           onMouseDown={cameraPositionWidget.onMouseDown}>
         <div className="glassmorphism p-1 rounded-md border border-white/10 shadow-lg 
                       dark:bg-black/40 dark:border-white/10 
                       light:bg-white/70 light:border-white/20">
-          <div className="flex flex-row gap-1">
+          <div className="flex flex-row gap-2">
             {/* Main minimap */}
             <div className="relative w-32 h-32 bg-black/20 dark:bg-black/40 light:bg-white/30 rounded overflow-hidden">
               {/* Grid lines */}
@@ -216,7 +221,7 @@ const Dashboard: React.FC = () => {
             {/* Camera preview */}
             <div className="relative w-32 h-32 overflow-hidden rounded-md">
               <img 
-                src={`https://lakeview.secondbrains.tech/cam/office_2.jpg?t=${Date.now()}`} 
+                src={`https://lakeview.secondbrains.tech/cam/office_3.jpg?t=${Date.now()}`} 
                 alt="Camera Feed"
                 className="w-full h-full object-cover"
               />
@@ -226,7 +231,13 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="text-xs text-center font-medium text-foreground py-1">Camera Position</div>
+          <div className="flex justify-between items-center px-1 py-1">
+            <div className="text-xs text-foreground font-medium">Camera Position</div>
+            {/* Handle for drag */}
+            <div className="cursor-move bg-primary/30 rounded-sm px-2 text-xs text-foreground/80">
+              Move
+            </div>
+          </div>
         </div>
       </div>
       
@@ -302,7 +313,7 @@ const Dashboard: React.FC = () => {
               position={graphWidget.position}
               onMouseDown={graphWidget.onMouseDown}
               ref={graphWidget.dragRef}
-              widthClass="w-[470px]"
+              widthClass="w-[500px]"
             >
               <MiniGraph data={mockGraphData} />
             </TelemetryWidget>

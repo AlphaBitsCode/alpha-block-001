@@ -41,7 +41,7 @@ const NavigationMenuComponent: React.FC = () => {
             <span className="max-w-[150px] truncate">{userName || "Guest"}</span>
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="w-[200px] p-4">
+            <div className="w-[200px] p-4 bg-popover text-popover-foreground">
               <div className="grid gap-2">
                 <div className="font-medium">
                   {userName ? `Welcome, ${userName}` : "Welcome, Guest"}

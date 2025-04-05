@@ -47,12 +47,15 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
   const { theme, setTheme } = useTheme();
   
   const toggleWidget = (key: keyof WidgetToggleState) => {
+    // Skip toggling minimap as it's now permanently displayed
+    if (key === 'minimap') return;
+    
     setWidgetToggles(prev => ({ ...prev, [key]: !prev[key] }));
     
     // Show feedback toast when toggling widgets
     const isActive = !widgetToggles[key];
     const widgetNames: Record<keyof WidgetToggleState, string> = {
-      metrics: "Metrics Dashboard",
+      metrics: "System Metrics",
       tasks: "Care Plan",
       activity: "Activity Log",
       graph: "Monitoring History",
@@ -89,12 +92,12 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
     });
   };
 
-  // Updated widget names and removed minimap toggle
+  // Widget buttons - removed minimap toggle
   const widgets = [
     { 
       id: 'metrics', 
       icon: Settings, 
-      tooltip: "Metrics Dashboard",
+      tooltip: "System Metrics",
       active: widgetToggles.metrics
     },
     { 

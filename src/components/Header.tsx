@@ -1,5 +1,7 @@
 
 import React from "react";
+import HarvestCountdown from "./HarvestCountdown";
+import NavigationMenuComponent from "./NavigationMenu";
 
 interface HeaderProps {
   unitId: string;
@@ -20,6 +22,10 @@ const Header: React.FC<HeaderProps> = ({ unitId, cropName, startDate }) => {
           <span className="mr-1.5">🍄</span>
           <span>{cropName} • Started {startDate}</span>
         </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <HarvestCountdown harvestDate="2025-04-15T00:00:00" />
+        <NavigationMenuComponent />
       </div>
     </div>
   );

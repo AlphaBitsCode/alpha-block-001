@@ -8,7 +8,7 @@ interface VideoFeedProps {
 const VideoFeed: React.FC<VideoFeedProps> = ({ streamUrl }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState("https://lakeview.secondbrains.tech/cam/office_4.jpg");
+  const [imageUrl, setImageUrl] = useState("https://lakeview.secondbrains.tech/cam/office_3.jpg");
   const [timestamp, setTimestamp] = useState(Date.now());
 
   useEffect(() => {
