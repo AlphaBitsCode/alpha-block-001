@@ -1,7 +1,5 @@
 
 import React from "react";
-import { MapPin } from "lucide-react";
-import RobotControlsWidget from "./RobotControlsWidget";
 
 interface HeaderProps {
   unitId: string;
@@ -16,10 +14,6 @@ const Header: React.FC<HeaderProps> = ({ unitId }) => {
           <span className="mr-1.5">🇻🇳</span> {/* Vietnam flag emoji */}
           <span>Unit #{unitId}</span>
         </div>
-      </div>
-      
-      <div className="flex items-center gap-2 md:gap-4 text-foreground/90">
-        <RobotControlsWidget initialPosition={{ x: 50, y: 50 }} />
       </div>
     </div>
   );

@@ -8,12 +8,16 @@ import MiniGraph from "./MiniGraph";
 import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart } from "lucide-react";
-import ControlPanel from "./ControlPanel";
 import MetricsOverlay from "./MetricsOverlay";
 import TelemetryWidget from "./TelemetryWidget";
 import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
 import { useDraggable, Position } from "@/hooks/use-draggable";
 import WidgetIcon from "./WidgetIcon";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { useTheme } from "@/hooks/use-theme";
+import { Toaster } from "sonner";
+import MiniMap from "./MiniMap";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -69,6 +73,8 @@ const Dashboard: React.FC = () => {
   const isMobile = useIsMobile();
   const [isHumidifierOn, setIsHumidifierOn] = useState(true);
   const [isLightOn, setIsLightOn] = useState(false);
+  const [showRobotControls, setShowRobotControls] = useState(false);
+  const [cameraPosition, setCameraPosition] = useState<Position>({ x: 50, y: 50 });
 
   // Widget visibility state
   const [widgetToggles, setWidgetToggles] = useState<WidgetToggleState>({
@@ -106,6 +112,10 @@ const Dashboard: React.FC = () => {
   const toggleLight = () => {
     setIsLightOn(!isLightOn);
   };
+  
+  const handleRobotControlPositionChange = (position: Position) => {
+    setCameraPosition(position);
+  };
 
   // Metrics data - would come from API in real app
   const metricsData = {
@@ -118,6 +128,48 @@ const Dashboard: React.FC = () => {
     lastUpdated: "2 min ago"
   };
 
+  const handleOpenRobotControls = () => {
+    setShowRobotControls(true);
+  };
+
+  const RobotControlDialog = () => {
+    const RobotControlContent = React.lazy(() => import('./RobotControlsContent'));
+    
+    if (isMobile) {
+      return (
+        <Drawer open={showRobotControls} onOpenChange={setShowRobotControls}>
+          <DrawerContent className="bg-black/90 border-t border-white/20 text-white">
+            <DrawerHeader>
+              <DrawerTitle>Camera Position Controls</DrawerTitle>
+            </DrawerHeader>
+            <React.Suspense fallback={<div className="p-4">Loading controls...</div>}>
+              <RobotControlContent 
+                initialPosition={cameraPosition}
+                onPositionChange={handleRobotControlPositionChange}
+              />
+            </React.Suspense>
+          </DrawerContent>
+        </Drawer>
+      );
+    }
+    
+    return (
+      <Dialog open={showRobotControls} onOpenChange={setShowRobotControls}>
+        <DialogContent className="bg-black/90 border border-white/20 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle>Camera Position Controls</DialogTitle>
+          </DialogHeader>
+          <React.Suspense fallback={<div className="p-4">Loading controls...</div>}>
+            <RobotControlContent 
+              initialPosition={cameraPosition}
+              onPositionChange={handleRobotControlPositionChange}
+            />
+          </React.Suspense>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       {/* Video Feed */}
@@ -126,20 +178,24 @@ const Dashboard: React.FC = () => {
       {/* Header */}
       <Header unitId="AB-001" />
       
-      {/* Control Panel */}
-      <ControlPanel 
-        temperature={metricsData.temperature}
-        humidity={metricsData.humidity}
-        isHumidifierOn={isHumidifierOn}
-        isLightOn={isLightOn}
-        toggleHumidifier={toggleHumidifier}
-        toggleLight={toggleLight}
-      />
+      {/* Toaster for notifications */}
+      <Toaster position="top-center" />
+      
+      {/* Mini Map */}
+      <MiniMap position={cameraPosition} />
+      
+      {/* Robot Controls Dialog/Drawer */}
+      <RobotControlDialog />
       
       {/* Vertical Toolbar */}
       <VerticalToolbar 
         widgetToggles={widgetToggles} 
-        setWidgetToggles={setWidgetToggles} 
+        setWidgetToggles={setWidgetToggles}
+        isHumidifierOn={isHumidifierOn}
+        toggleHumidifier={toggleHumidifier}
+        isLightOn={isLightOn}
+        toggleLight={toggleLight}
+        onOpenRobotControls={handleOpenRobotControls}
       />
       
       {/* HUD-style Metrics Overlay */}
