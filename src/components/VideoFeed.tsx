@@ -3,13 +3,28 @@ import React, { useEffect, useState } from "react";
 
 interface VideoFeedProps {
   streamUrl?: string;
+  isOverheadCamera?: boolean;
 }
 
-const VideoFeed: React.FC<VideoFeedProps> = ({ streamUrl }) => {
+const VideoFeed: React.FC<VideoFeedProps> = ({ streamUrl, isOverheadCamera = true }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState("https://lakeview.secondbrains.tech/cam/office_3.jpg");
+  const [imageUrl, setImageUrl] = useState(
+    isOverheadCamera 
+      ? "https://lakeview.secondbrains.tech/cam/office_4.jpg" 
+      : "https://lakeview.secondbrains.tech/cam/office_3.jpg"
+  );
   const [timestamp, setTimestamp] = useState(Date.now());
+
+  // Update image URL when camera view changes
+  useEffect(() => {
+    setImageUrl(
+      isOverheadCamera 
+        ? "https://lakeview.secondbrains.tech/cam/office_4.jpg" 
+        : "https://lakeview.secondbrains.tech/cam/office_3.jpg"
+    );
+    setTimestamp(Date.now());
+  }, [isOverheadCamera]);
 
   useEffect(() => {
     // Set initial image

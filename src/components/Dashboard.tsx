@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import VideoFeed from "./VideoFeed";
@@ -11,6 +10,7 @@ import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttC
 import MetricsOverlay from "./MetricsOverlay";
 import TelemetryWidget from "./TelemetryWidget";
 import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
+import TopToolbar from "./TopToolbar";
 import { useDraggable, Position } from "@/hooks/use-draggable";
 import WidgetIcon from "./WidgetIcon";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -60,16 +60,33 @@ const mockActivityLogs = [
   },
 ];
 
-// Mock graph data
-const mockGraphData = [
-  { time: "00:00", temperature: 27, humidity: 85 },
-  { time: "04:00", temperature: 26, humidity: 82 },
-  { time: "08:00", temperature: 28, humidity: 84 },
-  { time: "12:00", temperature: 30, humidity: 78 },
-  { time: "16:00", temperature: 31, humidity: 75 },
-  { time: "20:00", temperature: 29, humidity: 80 },
-  { time: "Now", temperature: 28.5, humidity: 82 },
-];
+// Generate 24-hour mock graph data
+const generateMockGraphData = () => {
+  const result = [];
+  const now = new Date();
+  
+  for (let i = 24; i >= 0; i--) {
+    const time = new Date(now.getTime() - i * 60 * 60 * 1000);
+    const hours = time.getHours().toString().padStart(2, '0');
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    const timeString = `${hours}:${minutes}`;
+    
+    // Create variations based on time of day
+    const tempBase = 28;
+    const humidityBase = 82;
+    const hourFactor = Math.sin((24-i) * Math.PI / 12); // Day/night cycle
+    
+    result.push({
+      time: timeString,
+      temperature: tempBase + hourFactor * 2 + Math.random() * 1.5,
+      humidity: humidityBase - hourFactor * 4 + Math.random() * 3
+    });
+  }
+  
+  return result;
+};
+
+const mockGraphData = generateMockGraphData();
 
 const Dashboard: React.FC = () => {
   const isMobile = useIsMobile();
@@ -78,6 +95,7 @@ const Dashboard: React.FC = () => {
   const [showRobotControls, setShowRobotControls] = useState(false);
   const [showSupportDialog, setShowSupportDialog] = useState(false);
   const [cameraPosition, setCameraPosition] = useState<Position>({ x: 50, y: 50 });
+  const [isOverheadCamera, setIsOverheadCamera] = useState(true);
 
   // Widget visibility state - only show metrics by default
   const [widgetToggles, setWidgetToggles] = useState<WidgetToggleState>({
@@ -123,6 +141,10 @@ const Dashboard: React.FC = () => {
     setIsLightOn(!isLightOn);
   };
   
+  const toggleCameraView = () => {
+    setIsOverheadCamera(!isOverheadCamera);
+  };
+  
   const handleRobotControlPositionChange = (position: Position) => {
     setCameraPosition(position);
   };
@@ -155,12 +177,22 @@ const Dashboard: React.FC = () => {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
       {/* Video Feed with new background */}
-      <VideoFeed />
+      <VideoFeed isOverheadCamera={isOverheadCamera} />
       
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-3 md:px-6">
         <Header unitId="AB-001" startDate="Apr 1, 2025" cropName="Pink Oyster" />
       </div>
+      
+      {/* Top Toolbar with Controls */}
+      <TopToolbar
+        isHumidifierOn={isHumidifierOn}
+        toggleHumidifier={toggleHumidifier}
+        isLightOn={isLightOn}
+        toggleLight={toggleLight}
+        onOpenRobotControls={handleOpenRobotControls}
+        isRobotControlsOpen={showRobotControls}
+      />
       
       {/* User Name Prompt */}
       <UserNamePrompt />
@@ -187,7 +219,7 @@ const Dashboard: React.FC = () => {
            onMouseDown={cameraPositionWidget.onMouseDown}>
         <div className="glassmorphism p-1 rounded-md border border-white/10 shadow-lg 
                       dark:bg-black/60 dark:border-white/10 
-                      light:bg-black/40 light:border-white/20">
+                      light:bg-white/70 light:border-black/20">
           <div className="flex flex-row gap-2">
             {/* Main minimap with new background */}
             <div className="relative w-32 h-32 bg-black/30 dark:bg-black/60 light:bg-black/40 rounded overflow-hidden">
@@ -283,12 +315,8 @@ const Dashboard: React.FC = () => {
       <VerticalToolbar 
         widgetToggles={widgetToggles} 
         setWidgetToggles={setWidgetToggles}
-        isHumidifierOn={isHumidifierOn}
-        toggleHumidifier={toggleHumidifier}
-        isLightOn={isLightOn}
-        toggleLight={toggleLight}
-        onOpenRobotControls={handleOpenRobotControls}
-        isRobotControlsOpen={showRobotControls}
+        onToggleCameraView={toggleCameraView}
+        isOverheadCamera={isOverheadCamera}
       />
       
       {/* HUD-style Metrics Overlay */}
@@ -349,7 +377,7 @@ const Dashboard: React.FC = () => {
               onMouseDown={graphWidget.onMouseDown}
               ref={graphWidget.dragRef}
               widthClass="w-[500px]"
-              heightClass="h-[320px]"
+              heightClass="h-[350px]"
             >
               <MiniGraph data={mockGraphData} />
             </TelemetryWidget>
@@ -361,22 +389,22 @@ const Dashboard: React.FC = () => {
       {isMobile && (
         <div className="fixed top-20 right-4 bottom-4 z-40 w-full max-w-xs flex flex-col space-y-4 overflow-y-auto pb-20">
           {widgetToggles.metrics && (
-            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4">
+            <div className="glassmorphism p-4 rounded-lg">
               <ConsolidatedMetricsWidget {...metricsData} />
             </div>
           )}
           {widgetToggles.tasks && (
-            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4">
+            <div className="glassmorphism p-4 rounded-lg">
               <CareTaskWidget />
             </div>
           )}
           {widgetToggles.activity && (
-            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4">
+            <div className="glassmorphism p-4 rounded-lg">
               <ActivityLogWidget logs={mockActivityLogs} />
             </div>
           )}
           {widgetToggles.graph && (
-            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4 h-[320px]">
+            <div className="glassmorphism p-4 rounded-lg h-[350px]">
               <MiniGraph data={mockGraphData} />
             </div>
           )}

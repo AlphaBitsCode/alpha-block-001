@@ -44,7 +44,7 @@ const TelemetryWidget = forwardRef<HTMLDivElement, TelemetryWidgetProps>(({
       ref={ref}
     >
       <div 
-        className="flex items-center justify-between p-3 border-b border-white/10 cursor-move"
+        className="flex items-center justify-between p-3 border-b border-white/10 dark:border-white/10 light:border-black/10 cursor-move"
         onMouseDown={onMouseDown}
         data-drag-handle="true"
       >
