@@ -57,8 +57,8 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="glassmorphism flex items-center px-3 py-2 rounded-full gap-4">
+      <div className="fixed top-[76px] left-1/2 transform -translate-x-1/2 z-50">
+        <div className="glassmorphism flex items-center px-4 py-3 rounded-full gap-4 dark:bg-black/80 light:bg-white/90 shadow-lg">
           {/* Humidifier Switch */}
           <Tooltip>
             <TooltipTrigger asChild>

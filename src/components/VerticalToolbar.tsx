@@ -94,7 +94,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
   return (
     <TooltipProvider delayDuration={300}>
       <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50">
-        <div className="glassmorphism bg-black/60 dark:bg-black/60 light:bg-white/70 flex flex-col items-center p-2 rounded-lg gap-2">
+        <div className="glassmorphism bg-black/80 dark:bg-black/80 light:bg-white/90 flex flex-col items-center p-2 rounded-lg gap-2 shadow-lg border border-white/20 dark:border-white/20 light:border-black/20">
           {/* Widget toggles */}
           {widgets.map((button, index) => (
             <React.Fragment key={button.id}>
@@ -103,7 +103,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
                   <button
                     onClick={() => toggleWidget(button.id as keyof WidgetToggleState)}
                     className={`w-10 h-10 rounded-md flex items-center justify-center transition-colors ${
-                      button.active ? 'bg-primary/30 text-foreground' : 'text-foreground/60 hover:text-foreground hover:bg-primary/10'
+                      button.active ? 'bg-primary/50 text-foreground dark:text-white light:text-black' : 'text-foreground/70 hover:text-foreground hover:bg-primary/20'
                     }`}
                   >
                     <button.icon size={18} />
@@ -113,7 +113,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
                   <p>{button.tooltip}</p>
                 </TooltipContent>
               </Tooltip>
-              {index === widgets.length - 1 && <Separator className="w-6 bg-white/20 dark:bg-white/20 light:bg-black/20" />}
+              {index === widgets.length - 1 && <Separator className="w-6 bg-white/30 dark:bg-white/30 light:bg-black/30" />}
             </React.Fragment>
           ))}
 
@@ -127,7 +127,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
                   onCheckedChange={handleToggleCameraView} 
                   className="data-[state=checked]:bg-blue-500"
                 />
-                <span className="text-[10px] text-center mt-1">
+                <span className="text-[10px] text-center mt-1 font-medium">
                   {isOverheadCamera ? "Overhead" : "Head Mount"}
                 </span>
               </div>

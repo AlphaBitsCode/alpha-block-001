@@ -105,9 +105,9 @@ const MiniGraph: React.FC<MiniGraphProps> = ({ data }) => {
             }}
             labelStyle={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 'bold' }}
             itemStyle={{ color: 'rgba(255, 255, 255, 1)', padding: '4px 0' }}
-            formatter={(value, name) => {
-              if (name === 'temperature') return [`${value.toFixed(1)}°C`, 'Temperature'];
-              if (name === 'humidity') return [`${value.toFixed(1)}%`, 'Humidity'];
+            formatter={(value: any, name: string) => {
+              if (name === 'temperature') return [`${Number(value).toFixed(1)}°C`, 'Temperature'];
+              if (name === 'humidity') return [`${Number(value).toFixed(1)}%`, 'Humidity'];
               return [value, name];
             }}
             labelFormatter={(label) => `Time: ${label}`}

@@ -97,15 +97,15 @@
 
 @layer utilities {
   .glassmorphism {
-    @apply bg-black/50 backdrop-blur-md border border-white/10 shadow-lg;
+    @apply bg-black/70 backdrop-blur-md border border-white/20 shadow-lg;
   }
   
   .light .glassmorphism {
-    @apply bg-white/70 backdrop-blur-md border border-black/20 shadow-lg text-gray-800;
+    @apply bg-white/80 backdrop-blur-md border border-black/20 shadow-lg text-gray-800;
   }
   
   .dark .glassmorphism {
-    @apply bg-black/60 backdrop-blur-md border border-white/10 shadow-lg;
+    @apply bg-black/80 backdrop-blur-md border border-white/20 shadow-lg;
   }
   
   .glassmorphism-light {
@@ -113,7 +113,7 @@
   }
   
   .light .glassmorphism-light {
-    @apply bg-white/70 backdrop-blur-md border border-black/10 shadow-lg;
+    @apply bg-white/80 backdrop-blur-md border border-black/20 shadow-lg;
   }
 
   .hide-scrollbar {
@@ -139,9 +139,9 @@ body {
 
 /* Improve text contrast in light mode */
 .light {
-  --widget-text: 240 5% 15%;
-  --widget-text-secondary: 240 5% 30%;
-  --widget-text-tertiary: 240 5% 40%;
+  --widget-text: 240 5% 10%;
+  --widget-text-secondary: 240 5% 20%;
+  --widget-text-tertiary: 240 5% 30%;
 }
 
 .light .text-foreground {
@@ -164,4 +164,18 @@ body {
 .light h3.text-foreground\/90 {
   color: hsl(var(--widget-text));
   font-weight: 600;
+}
+
+/* High contrast toolbar in both modes */
+.glassmorphism.bg-black\/60 {
+  @apply bg-black/80;
+}
+
+.light .glassmorphism.bg-white\/70 {
+  @apply bg-white/90;
+}
+
+/* Toolbar additional padding */
+.fixed.top-16 {
+  @apply top-20;
 }

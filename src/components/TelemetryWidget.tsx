@@ -39,18 +39,18 @@ const TelemetryWidget = forwardRef<HTMLDivElement, TelemetryWidgetProps>(({
   
   return (
     <div 
-      className={`glassmorphism absolute rounded-lg overflow-hidden animate-fade-in shadow-lg border border-white/10 ${widthClass} ${heightClass} ${className} z-20`}
+      className={`glassmorphism absolute rounded-lg overflow-hidden animate-fade-in shadow-lg border border-white/20 ${widthClass} ${heightClass} ${className} z-20`}
       style={positionStyle}
       ref={ref}
     >
       <div 
-        className="flex items-center justify-between p-3 border-b border-white/10 dark:border-white/10 light:border-black/10 cursor-move"
+        className="flex items-center justify-between p-3 border-b border-white/20 dark:bg-black/80 light:bg-white/80 cursor-move"
         onMouseDown={onMouseDown}
         data-drag-handle="true"
       >
         <div className="flex items-center">
           <div className="mr-2 text-foreground/90">{icon}</div>
-          <h3 className="text-sm font-medium text-foreground/90">{title}</h3>
+          <h3 className="text-sm font-semibold text-foreground/90">{title}</h3>
         </div>
         {onMinimizeClick && (
           <Toggle variant="outline" size="sm" onClick={onMinimizeClick} className="h-6 w-6 p-0 rounded-full">
@@ -58,7 +58,7 @@ const TelemetryWidget = forwardRef<HTMLDivElement, TelemetryWidgetProps>(({
           </Toggle>
         )}
       </div>
-      <div className="p-4">
+      <div className="p-4 dark:bg-black/70 light:bg-white/70">
         {children}
       </div>
     </div>
