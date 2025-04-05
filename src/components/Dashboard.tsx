@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Header from "./Header";
 import VideoFeed from "./VideoFeed";
@@ -13,11 +12,12 @@ import TelemetryWidget from "./TelemetryWidget";
 import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
 import { useDraggable, Position } from "@/hooks/use-draggable";
 import WidgetIcon from "./WidgetIcon";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { useTheme } from "@/hooks/use-theme";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Toaster } from "sonner";
 import MiniMap from "./MiniMap";
+import UserNamePrompt from "./UserNamePrompt";
+import NavigationMenuComponent from "./NavigationMenu";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -176,7 +176,13 @@ const Dashboard: React.FC = () => {
       <VideoFeed />
       
       {/* Header */}
-      <Header unitId="AB-001" />
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-3 md:px-6">
+        <Header unitId="AB-001" />
+        <NavigationMenuComponent />
+      </div>
+      
+      {/* User Name Prompt */}
+      <UserNamePrompt />
       
       {/* Toaster for notifications */}
       <Toaster position="top-center" />
