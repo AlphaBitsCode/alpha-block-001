@@ -14,6 +14,14 @@ const MushroomHealthWidget: React.FC<MushroomHealthWidgetProps> = ({
   status,
   lastUpdated,
 }) => {
+  const cultivationStartDate = "April 1, 2025";
+  const daysSinceCultivation = Math.floor((new Date().getTime() - new Date("2025-04-01").getTime()) / (1000 * 3600 * 24));
+  
+  // Pink oyster mushrooms typically fruit in 14-21 days
+  const growthStage = daysSinceCultivation <= 7 ? "Colonization" :
+                      daysSinceCultivation <= 14 ? "Primordia Formation" :
+                      daysSinceCultivation <= 21 ? "Fruiting" : "Harvest";
+  
   const getStatusInfo = () => {
     switch (status) {
       case "healthy":
@@ -55,7 +63,7 @@ const MushroomHealthWidget: React.FC<MushroomHealthWidgetProps> = ({
 
   return (
     <TelemetryWidget 
-      title="Mushroom Health" 
+      title="Pink Oyster Health" 
       icon={statusInfo.icon}
     >
       <div className={`flex items-center px-3 py-2 rounded-lg ${statusInfo.bgColor}`}>
@@ -65,8 +73,16 @@ const MushroomHealthWidget: React.FC<MushroomHealthWidgetProps> = ({
           <div className="text-sm text-white/70">{statusInfo.description}</div>
         </div>
       </div>
+      <div className="mt-2 flex items-center justify-between">
+        <div className="px-2 py-1 bg-pink-500/20 rounded text-xs text-white">
+          {growthStage}
+        </div>
+        <div className="text-xs text-white/70">
+          Day {daysSinceCultivation} of cycle
+        </div>
+      </div>
       <div className="mt-2 text-xs text-white/50 text-right">
-        Last update: {lastUpdated}
+        Cycle start: {cultivationStartDate} | Last update: {lastUpdated}
       </div>
     </TelemetryWidget>
   );

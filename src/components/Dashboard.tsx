@@ -19,14 +19,15 @@ const mockActivityLogs = [
   { id: "5", message: "Temperature low", timestamp: "3 hours ago", type: "warning" as const },
 ];
 
+// Tropical weather mock data for Pink Oyster mushrooms
 const mockGraphData = [
-  { time: "00:00", temperature: 23, humidity: 85 },
-  { time: "04:00", temperature: 22, humidity: 82 },
-  { time: "08:00", temperature: 22.5, humidity: 80 },
-  { time: "12:00", temperature: 24, humidity: 78 },
-  { time: "16:00", temperature: 25, humidity: 75 },
-  { time: "20:00", temperature: 24, humidity: 80 },
-  { time: "Now", temperature: 23, humidity: 82 },
+  { time: "00:00", temperature: 27, humidity: 85 },
+  { time: "04:00", temperature: 26, humidity: 82 },
+  { time: "08:00", temperature: 28, humidity: 84 },
+  { time: "12:00", temperature: 30, humidity: 78 },
+  { time: "16:00", temperature: 31, humidity: 75 },
+  { time: "20:00", temperature: 29, humidity: 80 },
+  { time: "Now", temperature: 28.5, humidity: 82 },
 ];
 
 const Dashboard: React.FC = () => {
@@ -62,7 +63,7 @@ const Dashboard: React.FC = () => {
         className={`fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4 transition-transform duration-300 
           ${isMobile && isCollapsed ? "translate-x-full" : "translate-x-0"}`}
       >
-        <TemperatureWidget temperature={23.5} trend="stable" />
+        <TemperatureWidget temperature={28.5} trend="stable" />
         <HumidityWidget humidity={82} />
         <MushroomHealthWidget status="healthy" lastUpdated="10 min ago" />
         <BatteryWidget percentage={78} isCharging={true} />
@@ -74,7 +75,7 @@ const Dashboard: React.FC = () => {
       {!isMobile && (
         <div className="fixed top-20 left-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4">
           <MushroomHealthWidget status="healthy" lastUpdated="10 min ago" />
-          <ActivityLogWidget logs={mockActivityLogs} />
+          {/* Removed duplicated ActivityLogWidget here */}
         </div>
       )}
     </div>

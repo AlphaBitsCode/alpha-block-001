@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Clock } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 
 interface HeaderProps {
   unitId: string;
@@ -8,6 +8,10 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ unitId }) => {
   const [currentTime, setCurrentTime] = React.useState<string>("");
+  const [currentDate, setCurrentDate] = React.useState<string>("");
+  const timezone = "Asia/Ho_Chi_Minh"; // Vietnam timezone
+  const country = "Vietnam";
+  const cultivationStart = "1st Apr 2025";
 
   React.useEffect(() => {
     const updateTime = () => {
@@ -16,14 +20,17 @@ const Header: React.FC<HeaderProps> = ({ unitId }) => {
         hour: '2-digit', 
         minute: '2-digit',
         second: '2-digit',
-        hour12: true 
+        hour12: true,
+        timeZone: timezone
       });
       const dateString = now.toLocaleDateString([], {
         month: 'short',
         day: 'numeric',
-        year: 'numeric'
+        year: 'numeric',
+        timeZone: timezone
       });
-      setCurrentTime(`${dateString} | ${timeString}`);
+      setCurrentTime(`${timeString}`);
+      setCurrentDate(dateString);
     };
 
     updateTime();
@@ -39,11 +46,26 @@ const Header: React.FC<HeaderProps> = ({ unitId }) => {
         <div className="bg-white/10 px-3 py-1 rounded-md text-sm text-white/90">
           Unit #{unitId}
         </div>
+        <div className="bg-pink-500/20 px-3 py-1 rounded-md text-sm text-white/90">
+          Pink Oyster
+        </div>
+        <div className="bg-white/10 px-3 py-1 rounded-md text-sm text-white/90">
+          Cycle: {cultivationStart}
+        </div>
       </div>
       
-      <div className="flex items-center space-x-2 text-white/90">
-        <Clock size={16} />
-        <span>{currentTime}</span>
+      <div className="flex items-center gap-4 text-white/90">
+        <div className="flex items-center">
+          <MapPin size={16} className="mr-1.5" />
+          <span>{country}</span>
+        </div>
+        <div className="flex items-center">
+          <Clock size={16} className="mr-1.5" />
+          <div className="flex flex-col items-end">
+            <span className="text-sm">{currentTime}</span>
+            <span className="text-xs text-white/70">{currentDate} ({timezone.split('/')[1]})</span>
+          </div>
+        </div>
       </div>
     </div>
   );
