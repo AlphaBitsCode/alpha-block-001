@@ -8,6 +8,8 @@ import MiniGraph from "./MiniGraph";
 import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Fan, Droplets, AlertCircle, ThermometerIcon, Check } from "lucide-react";
+import ControlPanel from "./ControlPanel";
+import MetricsOverlay from "./MetricsOverlay";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -62,6 +64,8 @@ const mockGraphData = [
 const Dashboard: React.FC = () => {
   const isMobile = useIsMobile();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isHumidifierOn, setIsHumidifierOn] = useState(true);
+  const [isLightOn, setIsLightOn] = useState(false);
 
   // Initial widget positions - properly spaced to avoid overlapping
   const [widgetPositions, setWidgetPositions] = useState({
@@ -73,6 +77,14 @@ const Dashboard: React.FC = () => {
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  const toggleHumidifier = () => {
+    setIsHumidifierOn(!isHumidifierOn);
+  };
+
+  const toggleLight = () => {
+    setIsLightOn(!isLightOn);
   };
 
   // Metrics data - would come from API in real app
@@ -94,10 +106,27 @@ const Dashboard: React.FC = () => {
       {/* Header */}
       <Header unitId="AB-127" />
       
+      {/* Control Panel */}
+      <ControlPanel 
+        temperature={metricsData.temperature}
+        humidity={metricsData.humidity}
+        isHumidifierOn={isHumidifierOn}
+        isLightOn={isLightOn}
+        toggleHumidifier={toggleHumidifier}
+        toggleLight={toggleLight}
+      />
+      
+      {/* HUD-style Metrics Overlay */}
+      <MetricsOverlay 
+        temperature={metricsData.temperature}
+        humidity={metricsData.humidity}
+        historyData={mockGraphData}
+      />
+      
       {/* Telemetry Control Button (Mobile) */}
       {isMobile && (
         <button
-          className="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full glassmorphism flex items-center justify-center"
+          className="fixed bottom-4 left-4 z-50 w-12 h-12 rounded-full glassmorphism flex items-center justify-center"
           onClick={toggleCollapse}
         >
           <span className="text-white text-xl">
@@ -118,9 +147,6 @@ const Dashboard: React.FC = () => {
           
           <div className="fixed top-20 right-4 z-40">
             <ActivityLogWidget logs={mockActivityLogs} />
-            <div className="mt-4">
-              <MiniGraph data={mockGraphData} />
-            </div>
           </div>
         </>
       )}
@@ -133,7 +159,6 @@ const Dashboard: React.FC = () => {
           <ConsolidatedMetricsWidget {...metricsData} />
           <CareTaskWidget />
           <ActivityLogWidget logs={mockActivityLogs} />
-          <MiniGraph data={mockGraphData} />
         </div>
       )}
     </div>

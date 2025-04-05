@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Clock, MapPin } from "lucide-react";
-import ThemeToggle from "./ThemeToggle";
 import RobotControlsWidget from "./RobotControlsWidget";
 
 interface HeaderProps {
@@ -58,7 +57,6 @@ const Header: React.FC<HeaderProps> = ({ unitId }) => {
       
       <div className="flex items-center gap-2 md:gap-4 text-foreground/90">
         <RobotControlsWidget initialPosition={{ x: 50, y: 50 }} />
-        <ThemeToggle />
         
         <div className="hidden md:flex items-center">
           <MapPin size={16} className="mr-1.5" />
