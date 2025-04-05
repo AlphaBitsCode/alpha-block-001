@@ -26,7 +26,7 @@ const MetricsOverlay: React.FC<MetricsOverlayProps> = ({
   return (
     <div className="flex flex-col space-y-2">
       {/* Temperature Chart */}
-      <div className={`glassmorphism rounded-lg px-3 py-2 ${heightClass}`}>
+      <div className="bg-black/60 backdrop-blur-md rounded-lg px-3 py-2 border border-white/10 shadow-lg ${heightClass}">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <ThermometerIcon size={16} className="mr-2 text-red-400" />
@@ -59,7 +59,7 @@ const MetricsOverlay: React.FC<MetricsOverlayProps> = ({
       </div>
       
       {/* Humidity Chart */}
-      <div className={`glassmorphism rounded-lg px-3 py-2 ${heightClass}`}>
+      <div className="bg-black/60 backdrop-blur-md rounded-lg px-3 py-2 border border-white/10 shadow-lg ${heightClass}">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Droplets size={16} className="mr-2 text-blue-400" />

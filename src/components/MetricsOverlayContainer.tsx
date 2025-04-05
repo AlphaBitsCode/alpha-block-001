@@ -17,24 +17,20 @@ const MetricsOverlayContainer: React.FC<MetricsOverlayContainerProps> = ({
   harvestDate
 }) => {
   return (
-    <>
-      {/* Harvest Countdown - above temperature/humidity widget with no background */}
-      <div className="fixed left-4 top-1/2 transform -translate-y-[160px] z-30">
+    <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-30">
+      <div className="flex flex-col space-y-4">
+        {/* Harvest Countdown - moved above temperature/humidity */}
         <HarvestCountdown harvestDate={harvestDate} />
+        
+        {/* MetricsOverlay with reduced height */}
+        <MetricsOverlay 
+          temperature={temperature}
+          humidity={humidity}
+          historyData={historyData}
+          heightClass="h-[80px]" // Reduced height
+        />
       </div>
-      
-      {/* MetricsOverlay in middle right with reduced height */}
-      <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-30">
-        <div className="flex flex-col space-y-4">
-          <MetricsOverlay 
-            temperature={temperature}
-            humidity={humidity}
-            historyData={historyData}
-            heightClass="h-[80px]" // Reduced height
-          />
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 
