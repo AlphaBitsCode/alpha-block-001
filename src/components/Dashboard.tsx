@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import VideoFeed from "./VideoFeed";
@@ -186,26 +185,28 @@ const Dashboard: React.FC = () => {
       <VideoFeed isOverheadCamera={isOverheadCamera} />
       
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-3 md:px-6">
+      <div className="fixed top-0 left-0 right-0 z-[100] flex justify-between items-center px-3 md:px-6">
         <Header unitId="AB-001" startDate="Apr 1, 2025" cropName="Pink Oyster" />
       </div>
       
-      {/* Top Toolbar with Controls - Moved slightly down */}
-      <TopToolbar
-        isHumidifierOn={isHumidifierOn}
-        toggleHumidifier={toggleHumidifier}
-        isLightOn={isLightOn}
-        toggleLight={toggleLight}
-        isOverheadCamera={isOverheadCamera}
-        toggleCameraView={toggleCameraView}
-        isMobile={isMobile}
-      />
+      {/* Top Toolbar with Controls - with improved z-index and drop shadow */}
+      <div className="fixed top-[76px] left-1/2 transform -translate-x-1/2 z-[90] shadow-md">
+        <TopToolbar
+          isHumidifierOn={isHumidifierOn}
+          toggleHumidifier={toggleHumidifier}
+          isLightOn={isLightOn}
+          toggleLight={toggleLight}
+          isOverheadCamera={isOverheadCamera}
+          toggleCameraView={toggleCameraView}
+          isMobile={isMobile}
+        />
+      </div>
       
       {/* User Name Prompt */}
       <UserNamePrompt />
       
-      {/* Harvest Countdown - moved above temperature/humidity widget with cleaner look */}
-      <div className="fixed left-4 top-1/2 transform -translate-y-[90px] z-30">
+      {/* Harvest Countdown - moved above temperature/humidity widget with no background */}
+      <div className="fixed left-4 top-1/2 transform -translate-y-[160px] z-30">
         <HarvestCountdown harvestDate="2025-04-15T00:00:00" />
       </div>
       
@@ -213,7 +214,7 @@ const Dashboard: React.FC = () => {
       <div className="fixed bottom-4 left-4 z-50">
         <Button 
           onClick={handleOpenSupportDialog} 
-          className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg w-10 h-10 p-0"
+          className="rounded-full shadow-lg w-10 h-10 p-0 bg-primary hover:bg-primary/90 text-primary-foreground dark:bg-primary dark:text-primary-foreground light:bg-primary light:text-primary-foreground"
           size="sm"
           aria-label="Support"
         >
@@ -305,7 +306,6 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="flex justify-between items-center px-1 py-1">
               <div className="text-xs text-foreground font-medium">Camera Position</div>
-              {/* Removed Move button */}
             </div>
           </div>
         </div>
@@ -333,7 +333,7 @@ const Dashboard: React.FC = () => {
             temperature={metricsData.temperature}
             humidity={metricsData.humidity}
             historyData={mockGraphData}
-            heightClass="h-[80px]" // Reduce the height by half
+            heightClass="h-[80px]" // Reduced height
           />
         </div>
       </div>

@@ -17,7 +17,7 @@ const MetricsOverlay: React.FC<MetricsOverlayProps> = ({
   temperature, 
   humidity,
   historyData,
-  heightClass = "h-[160px]" // Default height, can be overridden
+  heightClass = "h-[80px]" // Default height reduced by half
 }) => {
   // Pink oyster optimal ranges
   const isTemperatureOptimal = temperature >= 18 && temperature <= 30;

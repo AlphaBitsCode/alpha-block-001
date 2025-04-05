@@ -67,11 +67,12 @@ const MiniGraph: React.FC<MiniGraphProps> = ({ data }) => {
           <YAxis 
             yAxisId="temperature"
             orientation="left"
-            domain={[20, 35]} // Fixed temperature range
+            domain={[15, 35]} // Fixed reasonable temperature range
             tick={{ fill: 'rgba(255, 255, 255, 0.7)', fontSize: 12 }} 
             axisLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
             tickLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
             tickFormatter={(value) => `${value}°C`}
+            width={45} // Ensure enough width for temperature display
           />
           <YAxis 
             yAxisId="humidity"
@@ -81,6 +82,7 @@ const MiniGraph: React.FC<MiniGraphProps> = ({ data }) => {
             axisLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
             tickLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
             tickFormatter={(value) => `${value}%`}
+            width={40} // Ensure enough width for percentage display
           />
           <Tooltip
             contentStyle={{ 
@@ -109,6 +111,7 @@ const MiniGraph: React.FC<MiniGraphProps> = ({ data }) => {
                 {value === 'temperature' ? 'Temperature (°C)' : 'Humidity (%)'}
               </span>
             }}
+            wrapperStyle={{ paddingTop: '10px' }}
           />
           <Line 
             yAxisId="temperature"

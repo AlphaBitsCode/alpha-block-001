@@ -13,7 +13,19 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <TooltipProvider>
-        <Sonner position="bottom-center" closeButton={false} duration={2000} className="compact-toaster" />
+        <Sonner 
+          position="bottom-center" 
+          closeButton={false} 
+          duration={1500} 
+          className="compact-toaster" 
+          toastOptions={{
+            classNames: {
+              toast: "px-3 py-2", // More compact toasts
+              title: "text-sm",
+              description: "text-xs"
+            }
+          }}
+        />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />

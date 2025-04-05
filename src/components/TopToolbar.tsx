@@ -45,73 +45,71 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="fixed top-[76px] left-1/2 transform -translate-x-1/2 z-50">
-        <div className={`glassmorphism flex items-center px-3 py-2 rounded-lg gap-3 md:gap-4 dark:bg-black/80 light:bg-white/90 shadow-lg ${isMobile ? 'max-w-[95vw]' : ''}`}>
-          {/* Humidifier Switch */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1.5">
-                <Droplets 
-                  size={16} 
-                  className={isHumidifierOn ? "text-blue-400" : "text-foreground/60"} 
-                />
-                <Switch 
-                  checked={isHumidifierOn} 
-                  onCheckedChange={handleToggleHumidifier} 
-                  className="data-[state=checked]:bg-blue-500"
-                />
-                <span className="text-xs font-medium">{isMobile ? "Humid" : "Humidifier"}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{isHumidifierOn ? "Turn Off Humidifier" : "Turn On Humidifier"}</p>
-            </TooltipContent>
-          </Tooltip>
+      <div className="glassmorphism flex items-center px-3 py-2 rounded-lg gap-3 md:gap-4 dark:bg-black/80 light:bg-white/90 shadow-md z-[90]">
+        {/* Humidifier Switch */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-1.5">
+              <Droplets 
+                size={16} 
+                className={isHumidifierOn ? "text-blue-400" : "text-foreground/60"} 
+              />
+              <Switch 
+                checked={isHumidifierOn} 
+                onCheckedChange={handleToggleHumidifier} 
+                className="data-[state=checked]:bg-blue-500"
+              />
+              <span className="text-xs font-medium">{isMobile ? "Humid" : "Humidifier"}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="z-[100]">
+            <p>{isHumidifierOn ? "Turn Off Humidifier" : "Turn On Humidifier"}</p>
+          </TooltipContent>
+        </Tooltip>
 
-          {/* Grow Light Switch */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1.5">
-                <Sun 
-                  size={16} 
-                  className={isLightOn ? "text-yellow-400" : "text-foreground/60"} 
-                />
-                <Switch 
-                  checked={isLightOn} 
-                  onCheckedChange={handleToggleLight} 
-                  className="data-[state=checked]:bg-yellow-500"
-                />
-                <span className="text-xs font-medium">{isMobile ? "Light" : "Grow Light"}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{isLightOn ? "Turn Off Grow Light" : "Turn On Grow Light"}</p>
-            </TooltipContent>
-          </Tooltip>
+        {/* Grow Light Switch */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-1.5">
+              <Sun 
+                size={16} 
+                className={isLightOn ? "text-yellow-400" : "text-foreground/60"} 
+              />
+              <Switch 
+                checked={isLightOn} 
+                onCheckedChange={handleToggleLight} 
+                className="data-[state=checked]:bg-yellow-500"
+              />
+              <span className="text-xs font-medium">{isMobile ? "Light" : "Grow Light"}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="z-[100]">
+            <p>{isLightOn ? "Turn Off Grow Light" : "Turn On Grow Light"}</p>
+          </TooltipContent>
+        </Tooltip>
 
-          {/* Camera Toggle */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1.5">
-                <Camera
-                  size={16}
-                  className={!isOverheadCamera ? "text-blue-400" : "text-foreground/60"}
-                />
-                <Switch 
-                  checked={!isOverheadCamera} 
-                  onCheckedChange={handleToggleCameraView} 
-                  className="data-[state=checked]:bg-blue-500"
-                />
-                <span className="text-xs font-medium">
-                  {isMobile ? "Cam" : isOverheadCamera ? "Overhead" : "Head Cam"}
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Toggle camera view</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
+        {/* Camera Toggle */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-1.5">
+              <Camera
+                size={16}
+                className={!isOverheadCamera ? "text-blue-400" : "text-foreground/60"}
+              />
+              <Switch 
+                checked={!isOverheadCamera} 
+                onCheckedChange={handleToggleCameraView} 
+                className="data-[state=checked]:bg-blue-500"
+              />
+              <span className="text-xs font-medium">
+                {isMobile ? "Cam" : isOverheadCamera ? "Overhead" : "Head Cam"}
+              </span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="z-[100]">
+            <p>Toggle camera view</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </TooltipProvider>
   );
