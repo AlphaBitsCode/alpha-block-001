@@ -5,6 +5,7 @@ import VideoFeed from "./VideoFeed";
 import ConsolidatedMetricsWidget from "./ConsolidatedMetricsWidget";
 import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
+import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Fan, Droplets, AlertCircle, ThermometerIcon, Check } from "lucide-react";
 
@@ -103,6 +104,7 @@ const Dashboard: React.FC = () => {
           ${isMobile && isCollapsed ? "translate-x-full" : "translate-x-0"}`}
       >
         <ConsolidatedMetricsWidget {...metricsData} />
+        <CareTaskWidget />
         <ActivityLogWidget logs={mockActivityLogs} />
         <MiniGraph data={mockGraphData} />
       </div>
