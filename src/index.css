@@ -124,6 +124,19 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;  /* Chrome, Safari, Opera */
   }
+  
+  /* Added compact toaster styles */
+  .compact-toaster [data-sonner-toast] {
+    @apply py-2 px-3 max-w-xs;
+  }
+  
+  .compact-toaster [data-sonner-toast] > div {
+    @apply gap-1;
+  }
+  
+  .compact-toaster [data-sonner-toast] [data-description] {
+    @apply text-xs;
+  }
 }
 
 body {
@@ -178,4 +191,9 @@ body {
 /* Toolbar additional padding */
 .fixed.top-16 {
   @apply top-20;
+}
+
+/* Harvest Countdown overlay styles */
+.harvest-countdown-overlay {
+  @apply fixed left-4 top-1/2 transform -translate-y-16 z-30 glassmorphism bg-black/50 px-3 py-1.5 rounded-lg;
 }

@@ -23,7 +23,7 @@ const RobotControlsWidget: React.FC<RobotControlsWidgetProps> = ({
       onClick={onOpenDialog}
     >
       <Move size={16} />
-      Robot Controls
+      Controls
     </Button>
   );
 };

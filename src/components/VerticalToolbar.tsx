@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { 
   ListOrdered, 
   GanttChart, 
@@ -7,7 +7,8 @@ import {
   LineChart,
   Move,
   Moon,
-  Sun
+  Sun,
+  Map
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
@@ -34,16 +35,11 @@ interface VerticalToolbarProps {
 const VerticalToolbar: React.FC<VerticalToolbarProps> = ({ 
   widgetToggles, 
   setWidgetToggles,
-  onToggleCameraView,
-  isOverheadCamera,
   onOpenRobotControls
 }) => {
   const { theme, setTheme } = useTheme();
   
   const toggleWidget = (key: keyof WidgetToggleState) => {
-    // Skip toggling minimap as it's now permanently displayed
-    if (key === 'minimap') return;
-    
     setWidgetToggles(prev => ({ ...prev, [key]: !prev[key] }));
     
     // Show feedback toast when toggling widgets
@@ -56,21 +52,16 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
       minimap: "Camera Position"
     };
     
-    toast.success(`${widgetNames[key]} ${isActive ? 'shown' : 'hidden'}`, {
-      description: isActive ? `${widgetNames[key]} is now visible` : `${widgetNames[key]} is now hidden`,
-    });
+    toast.success(`${widgetNames[key]} ${isActive ? 'shown' : 'hidden'}`);
   };
 
   const toggleThemeMode = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
-    toast.success(`${newTheme === 'dark' ? 'Dark' : 'Light'} mode activated`, {
-      description: `Interface switched to ${newTheme} mode`,
-      icon: newTheme === 'dark' ? <Moon size={18} /> : <Sun size={18} />
-    });
+    toast.success(`${newTheme === 'dark' ? 'Dark' : 'Light'} mode activated`);
   };
 
-  // Widget buttons - removed minimap toggle
+  // Widget buttons - now including minimap toggle
   const widgets = [
     { 
       id: 'metrics', 
@@ -95,6 +86,12 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
       icon: LineChart, 
       tooltip: "Monitoring History",
       active: widgetToggles.graph
+    },
+    { 
+      id: 'minimap', 
+      icon: Map, 
+      tooltip: "Camera Position Map",
+      active: widgetToggles.minimap
     }
   ];
 
@@ -109,7 +106,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => toggleWidget(button.id as keyof WidgetToggleState)}
-                    className={`w-10 h-10 rounded-md flex items-center justify-center transition-colors ${
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
                       button.active ? 'bg-primary/50 text-foreground dark:text-white light:text-black' : 'text-foreground/70 hover:text-foreground hover:bg-primary/20'
                     }`}
                   >
@@ -120,7 +117,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
                   <p>{button.tooltip}</p>
                 </TooltipContent>
               </Tooltip>
-              {index === widgets.length - 1 && <Separator className="w-6 bg-white/30 dark:bg-white/30 light:bg-black/30" />}
+              {index === 3 && <Separator className="w-6 bg-white/30 dark:bg-white/30 light:bg-black/30" />}
             </React.Fragment>
           ))}
 
@@ -129,7 +126,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
             <TooltipTrigger asChild>
               <button
                 onClick={onOpenRobotControls}
-                className="w-10 h-10 rounded-md flex items-center justify-center transition-colors text-foreground/70 hover:text-foreground hover:bg-primary/20"
+                className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors text-foreground/70 hover:text-foreground hover:bg-primary/20"
               >
                 <Move size={18} />
               </button>
@@ -144,7 +141,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
             <TooltipTrigger asChild>
               <button
                 onClick={toggleThemeMode}
-                className="w-10 h-10 rounded-md flex items-center justify-center transition-colors text-foreground/70 hover:text-foreground hover:bg-primary/20"
+                className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors text-foreground/70 hover:text-foreground hover:bg-primary/20"
               >
                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
               </button>

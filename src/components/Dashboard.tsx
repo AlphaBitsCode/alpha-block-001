@@ -7,13 +7,12 @@ import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
 import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart, HelpCircle } from "lucide-react";
+import { Fan, Droplets, Check, ThermometerIcon, ListOrdered, GanttChart, Settings, LineChart, HelpCircle } from "lucide-react";
 import MetricsOverlay from "./MetricsOverlay";
 import TelemetryWidget from "./TelemetryWidget";
 import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
 import TopToolbar from "./TopToolbar";
 import { useDraggable, Position } from "@/hooks/use-draggable";
-import WidgetIcon from "./WidgetIcon";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Toaster } from "sonner";
@@ -21,6 +20,7 @@ import UserNamePrompt from "./UserNamePrompt";
 import RobotControlsContent from "./RobotControlsContent";
 import { Button } from "@/components/ui/button";
 import SupportDialog from "./SupportDialog";
+import HarvestCountdown from "./HarvestCountdown";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
   const [cameraPosition, setCameraPosition] = useState<Position>({ x: 50, y: 50 });
   const [isOverheadCamera, setIsOverheadCamera] = useState(true);
 
-  // Widget visibility state - hide metrics by default now
+  // Widget visibility state - hide metrics by default
   const [widgetToggles, setWidgetToggles] = useState<WidgetToggleState>({
     metrics: false,
     tasks: false,
@@ -170,6 +170,10 @@ const Dashboard: React.FC = () => {
     setShowSupportDialog(true);
   };
 
+  const toggleMinimapVisibility = () => {
+    setWidgetToggles(prev => ({...prev, minimap: !prev.minimap}));
+  };
+
   // Pre-load the RobotControlsContent to prevent flashing
   useEffect(() => {
     // This ensures the component is loaded before it's needed
@@ -200,7 +204,12 @@ const Dashboard: React.FC = () => {
       {/* User Name Prompt */}
       <UserNamePrompt />
       
-      {/* Support Button - Now at the bottom left */}
+      {/* Harvest Countdown - now as overlay near temperature/humidity widget */}
+      <div className="harvest-countdown-overlay">
+        <HarvestCountdown harvestDate="2025-04-15T00:00:00" />
+      </div>
+      
+      {/* Support Button - at the bottom left */}
       <div className="fixed bottom-4 left-4 z-50">
         <Button 
           onClick={handleOpenSupportDialog} 
@@ -212,101 +221,95 @@ const Dashboard: React.FC = () => {
         </Button>
       </div>
       
-      {/* Fixed MiniMap moved to bottom-right corner */}
-      <div className="fixed bottom-4 right-4 z-40" ref={cameraPositionWidget.dragRef} 
-           style={{ 
-             position: 'absolute', 
-             left: `${cameraPositionWidget.position.x}px`, 
-             top: `${cameraPositionWidget.position.y}px`
-           }}
-           onMouseDown={cameraPositionWidget.onMouseDown}>
-        <div className="glassmorphism p-1 rounded-md border border-white/20 shadow-lg 
-                      dark:bg-black/70 dark:border-white/20 
-                      light:bg-white/80 light:border-black/20">
-          <div className="flex flex-row gap-2">
-            {/* Main minimap with new background */}
-            <div className="relative w-32 h-32 bg-black/30 dark:bg-black/60 light:bg-black/40 rounded overflow-hidden">
-              {/* Minimap background image */}
-              <div className="absolute inset-0 z-0">
+      {/* Fixed MiniMap moved to bottom-right corner - toggle visibility based on widgetToggles.minimap */}
+      {widgetToggles.minimap && (
+        <div className="fixed bottom-4 right-4 z-40" ref={cameraPositionWidget.dragRef} 
+             style={{ 
+               position: 'absolute', 
+               left: `${cameraPositionWidget.position.x}px`, 
+               top: `${cameraPositionWidget.position.y}px`
+             }}
+             onMouseDown={cameraPositionWidget.onMouseDown}>
+          <div className="glassmorphism p-1 rounded-md border border-white/20 shadow-lg 
+                        dark:bg-black/70 dark:border-white/20 
+                        light:bg-white/80 light:border-black/20">
+            <div className="flex flex-row gap-2">
+              {/* Main minimap with new background */}
+              <div className="relative w-32 h-32 bg-black/30 dark:bg-black/60 light:bg-black/40 rounded overflow-hidden">
+                {/* Minimap background image */}
+                <div className="absolute inset-0 z-0">
+                  <img 
+                    src="https://lakeview.secondbrains.tech/cam/office_4.jpg" 
+                    alt="Map background"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30"></div>
+                </div>
+                
+                {/* Grid lines */}
+                <div className="absolute inset-0 grid grid-cols-4 gap-0 pointer-events-none z-10">
+                  {Array(3).fill(0).map((_, i) => (
+                    <div 
+                      key={`v-${i}`} 
+                      className="border-r dark:border-white/20 light:border-white/30 h-full" 
+                      style={{left: `${(i + 1) * 25}%`}} 
+                    />
+                  ))}
+                  {Array(3).fill(0).map((_, i) => (
+                    <div 
+                      key={`h-${i}`} 
+                      className="border-b dark:border-white/20 light:border-white/30 w-full" 
+                      style={{top: `${(i + 1) * 25}%`}} 
+                    />
+                  ))}
+                </div>
+                
+                {/* Camera position indicator */}
+                <div 
+                  className="absolute w-3 h-3 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_5px_rgba(59,130,246,0.7)] z-20"
+                  style={{ 
+                    left: `${cameraPosition.x}%`, 
+                    top: `${cameraPosition.y}%`,
+                  }}
+                />
+                
+                {/* View cone / Direction indicator */}
+                <div 
+                  className="absolute w-12 h-12 bg-blue-500/20 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-10"
+                  style={{ 
+                    left: `${cameraPosition.x}%`, 
+                    top: `${cameraPosition.y}%`,
+                  }}
+                />
+                
+                {/* Position coordinates display */}
+                <div className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 rounded text-xs text-white/90 font-mono z-20">
+                  X:{Math.round(cameraPosition.x)}, Y:{Math.round(cameraPosition.y)}
+                </div>
+                
+                <div className="absolute inset-0 border dark:border-white/20 light:border-white/40 rounded pointer-events-none z-10" />
+              </div>
+              
+              {/* Camera preview with refreshing image */}
+              <div className="relative w-32 h-32 overflow-hidden rounded-md">
                 <img 
-                  src="https://lakeview.secondbrains.tech/cam/office_4.jpg" 
-                  alt="Map background"
+                  src={`https://lakeview.secondbrains.tech/cam/office_3.jpg?t=${Math.floor(Date.now() / 30000)}`} 
+                  alt="Camera Feed"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/30"></div>
-              </div>
-              
-              {/* Grid lines */}
-              <div className="absolute inset-0 grid grid-cols-4 gap-0 pointer-events-none z-10">
-                {Array(3).fill(0).map((_, i) => (
-                  <div 
-                    key={`v-${i}`} 
-                    className="border-r dark:border-white/20 light:border-white/30 h-full" 
-                    style={{left: `${(i + 1) * 25}%`}} 
-                  />
-                ))}
-                {Array(3).fill(0).map((_, i) => (
-                  <div 
-                    key={`h-${i}`} 
-                    className="border-b dark:border-white/20 light:border-white/30 w-full" 
-                    style={{top: `${(i + 1) * 25}%`}} 
-                  />
-                ))}
-              </div>
-              
-              {/* Camera position indicator */}
-              <div 
-                className="absolute w-3 h-3 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_5px_rgba(59,130,246,0.7)] z-20"
-                style={{ 
-                  left: `${cameraPosition.x}%`, 
-                  top: `${cameraPosition.y}%`,
-                }}
-              />
-              
-              {/* View cone / Direction indicator */}
-              <div 
-                className="absolute w-12 h-12 bg-blue-500/20 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-10"
-                style={{ 
-                  left: `${cameraPosition.x}%`, 
-                  top: `${cameraPosition.y}%`,
-                }}
-              />
-              
-              {/* Position coordinates display */}
-              <div className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 rounded text-xs text-white/90 font-mono z-20">
-                X:{Math.round(cameraPosition.x)}, Y:{Math.round(cameraPosition.y)}
-              </div>
-              
-              <div className="absolute inset-0 border dark:border-white/20 light:border-white/40 rounded pointer-events-none z-10" />
-            </div>
-            
-            {/* Camera preview with refreshing image */}
-            <div className="relative w-32 h-32 overflow-hidden rounded-md">
-              <img 
-                src={`https://lakeview.secondbrains.tech/cam/office_3.jpg?t=${Math.floor(Date.now() / 30000)}`} 
-                alt="Camera Feed"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 border dark:border-white/20 light:border-white/30 rounded-md pointer-events-none" />
-              <div className="absolute bottom-1 left-1 right-1 text-center bg-black/70 text-xs text-white/90 px-1 py-0.5 rounded">
-                Live Feed
+                <div className="absolute inset-0 border dark:border-white/20 light:border-white/30 rounded-md pointer-events-none" />
+                <div className="absolute bottom-1 left-1 right-1 text-center bg-black/70 text-xs text-white/90 px-1 py-0.5 rounded">
+                  Live Feed
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex justify-between items-center px-1 py-1">
-            <div className="text-xs text-foreground font-medium">Camera Position</div>
-            {/* Handle for drag */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-6 text-xs px-2 py-0"
-              onClick={handleOpenRobotControls}
-            >
-              Move
-            </Button>
+            <div className="flex justify-between items-center px-1 py-1">
+              <div className="text-xs text-foreground font-medium">Camera Position</div>
+              {/* Removed Move button */}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       
       {/* Robot Controls Dialog/Drawer */}
       <RobotControlDialog />

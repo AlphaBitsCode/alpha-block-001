@@ -30,38 +30,29 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
 }) => {
   const handleToggleHumidifier = () => {
     toggleHumidifier();
-    toast.success(isHumidifierOn ? "Humidifier turned off" : "Humidifier turned on", {
-      description: isHumidifierOn ? "Humidity will gradually decrease" : "Humidity will be maintained at optimal levels",
-      icon: <Droplets size={18} />
-    });
+    toast.success(isHumidifierOn ? "Humidifier off" : "Humidifier on");
   };
 
   const handleToggleLight = () => {
     toggleLight();
-    toast.success(isLightOn ? "Grow light turned off" : "Grow light turned on", {
-      description: isLightOn ? "Light cycle paused" : "Light cycle activated",
-      icon: <Sun size={18} />
-    });
+    toast.success(isLightOn ? "Grow light off" : "Grow light on");
   };
 
   const handleToggleCameraView = () => {
     toggleCameraView();
-    toast.success(isOverheadCamera ? "Switched to headmounted camera" : "Switched to overhead camera", {
-      description: isOverheadCamera ? "Viewing from camera perspective" : "Viewing from top down perspective",
-      icon: <Camera size={18} />
-    });
+    toast.success(isOverheadCamera ? "Head cam active" : "Overhead cam active");
   };
 
   return (
     <TooltipProvider delayDuration={300}>
       <div className="fixed top-[76px] left-1/2 transform -translate-x-1/2 z-50">
-        <div className={`glassmorphism flex items-center px-4 py-3 rounded-full gap-3 md:gap-4 dark:bg-black/80 light:bg-white/90 shadow-lg ${isMobile ? 'max-w-[95vw]' : ''}`}>
+        <div className={`glassmorphism flex items-center px-3 py-2 rounded-lg gap-3 md:gap-4 dark:bg-black/80 light:bg-white/90 shadow-lg ${isMobile ? 'max-w-[95vw]' : ''}`}>
           {/* Humidifier Switch */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Droplets 
-                  size={18} 
+                  size={16} 
                   className={isHumidifierOn ? "text-blue-400" : "text-foreground/60"} 
                 />
                 <Switch 
@@ -69,7 +60,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
                   onCheckedChange={handleToggleHumidifier} 
                   className="data-[state=checked]:bg-blue-500"
                 />
-                <span className="text-xs font-medium">Humidifier</span>
+                <span className="text-xs font-medium">{isMobile ? "Humid" : "Humidifier"}</span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
@@ -80,9 +71,9 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
           {/* Grow Light Switch */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Sun 
-                  size={18} 
+                  size={16} 
                   className={isLightOn ? "text-yellow-400" : "text-foreground/60"} 
                 />
                 <Switch 
@@ -90,7 +81,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
                   onCheckedChange={handleToggleLight} 
                   className="data-[state=checked]:bg-yellow-500"
                 />
-                <span className="text-xs font-medium">Grow Light</span>
+                <span className="text-xs font-medium">{isMobile ? "Light" : "Grow Light"}</span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
@@ -101,9 +92,9 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
           {/* Camera Toggle */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Camera
-                  size={18}
+                  size={16}
                   className={!isOverheadCamera ? "text-blue-400" : "text-foreground/60"}
                 />
                 <Switch 
@@ -112,12 +103,12 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
                   className="data-[state=checked]:bg-blue-500"
                 />
                 <span className="text-xs font-medium">
-                  {isOverheadCamera ? "Overhead" : "Head Mount"}
+                  {isMobile ? "Cam" : isOverheadCamera ? "Overhead" : "Head Cam"}
                 </span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Toggle between overhead and head-mounted camera</p>
+              <p>Toggle camera view</p>
             </TooltipContent>
           </Tooltip>
         </div>
