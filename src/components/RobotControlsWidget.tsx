@@ -19,7 +19,7 @@ const RobotControlsWidget: React.FC<RobotControlsWidgetProps> = ({
     <Button 
       variant={isDialogOpen ? "secondary" : "outline"} 
       size="sm" 
-      className="flex gap-2" 
+      className="flex gap-2 rounded-lg" 
       onClick={onOpenDialog}
     >
       <Move size={16} />

@@ -7,7 +7,7 @@ import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
 import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Fan, Droplets, Check, ThermometerIcon, ListOrdered, GanttChart, Settings, LineChart, HelpCircle } from "lucide-react";
+import { Fan, Droplets, Check, ThermometerIcon, ListOrdered, GanttChart, Settings, LineChart, HelpCircle, Map } from "lucide-react";
 import MetricsOverlay from "./MetricsOverlay";
 import TelemetryWidget from "./TelemetryWidget";
 import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
@@ -204,16 +204,16 @@ const Dashboard: React.FC = () => {
       {/* User Name Prompt */}
       <UserNamePrompt />
       
-      {/* Harvest Countdown - now as overlay near temperature/humidity widget */}
-      <div className="harvest-countdown-overlay">
+      {/* Harvest Countdown - moved above temperature/humidity widget with cleaner look */}
+      <div className="fixed left-4 top-1/2 transform -translate-y-[90px] z-30">
         <HarvestCountdown harvestDate="2025-04-15T00:00:00" />
       </div>
       
-      {/* Support Button - at the bottom left */}
+      {/* Support Button - at the bottom left with theme-aware styling */}
       <div className="fixed bottom-4 left-4 z-50">
         <Button 
           onClick={handleOpenSupportDialog} 
-          className="rounded-full bg-primary/90 hover:bg-primary shadow-lg w-10 h-10 p-0"
+          className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg w-10 h-10 p-0"
           size="sm"
           aria-label="Support"
         >
@@ -326,19 +326,22 @@ const Dashboard: React.FC = () => {
         onOpenRobotControls={handleOpenRobotControls}
       />
       
-      {/* Move the MetricsOverlay to middle right of the screen */}
+      {/* Move the MetricsOverlay to middle right of the screen with reduced height */}
       <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-30">
-        <MetricsOverlay 
-          temperature={metricsData.temperature}
-          humidity={metricsData.humidity}
-          historyData={mockGraphData}
-        />
+        <div className="flex flex-col space-y-4">
+          <MetricsOverlay 
+            temperature={metricsData.temperature}
+            humidity={metricsData.humidity}
+            historyData={mockGraphData}
+            heightClass="h-[80px]" // Reduce the height by half
+          />
+        </div>
       </div>
       
       {/* Draggable Widgets */}
       {!isMobile && (
         <>
-          {/* Metrics Widget */}
+          {/* Metrics Widget - now hidden by default */}
           {widgetToggles.metrics && (
             <TelemetryWidget 
               title="System Metrics" 

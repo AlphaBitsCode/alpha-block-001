@@ -1,94 +1,93 @@
 
 import React from "react";
-import { Area, AreaChart, ResponsiveContainer } from "recharts";
-import { Thermometer, Droplets } from "lucide-react";
+import { ThermometerIcon, Droplets } from "lucide-react";
 
 interface MetricsOverlayProps {
   temperature: number;
   humidity: number;
-  historyData: {
+  historyData?: Array<{
     time: string;
     temperature: number;
     humidity: number;
-  }[];
+  }>;
+  heightClass?: string;
 }
 
-const MetricsOverlay: React.FC<MetricsOverlayProps> = ({
-  temperature,
+const MetricsOverlay: React.FC<MetricsOverlayProps> = ({ 
+  temperature, 
   humidity,
-  historyData
+  historyData,
+  heightClass = "h-[160px]" // Default height, can be overridden
 }) => {
-  // Pink oyster optimal temperature range: 20-30°C
-  const isTempOptimal = temperature >= 20 && temperature <= 30;
-  const tempColor = isTempOptimal ? "text-green-400" : temperature > 30 ? "text-red-400" : "text-yellow-400";
+  // Pink oyster optimal ranges
+  const isTemperatureOptimal = temperature >= 18 && temperature <= 30;
+  const isHumidityOptimal = humidity >= 80 && humidity <= 90;
   
-  // Pink oyster optimal humidity range: 80-95%
-  const isHumidityOptimal = humidity >= 80 && humidity <= 95;
-  const humidityColor = isHumidityOptimal ? "text-green-400" : humidity > 95 ? "text-blue-400" : "text-yellow-400";
-
   return (
-    <div className="flex items-end space-x-4">
-      {/* Temperature HUD */}
-      <div className="flex flex-col items-center">
-        <div className="w-20 h-36 relative mb-1">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={historyData}
-              margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
-            >
-              <defs>
-                <linearGradient id="tempColorGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.6}/>
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <Area
-                type="monotone"
-                dataKey="temperature"
-                stroke="#ef4444"
-                fillOpacity={1}
-                fill="url(#tempColorGradient)"
-                strokeWidth={1.5}
-                dot={false}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+    <div className="flex flex-col space-y-2">
+      {/* Temperature Chart */}
+      <div className={`glassmorphism rounded-lg px-3 py-2 ${heightClass}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <ThermometerIcon size={16} className="mr-2 text-red-400" />
+            <span className="text-xs uppercase font-medium">Temperature</span>
+          </div>
+          <div className="text-xs">
+            {isTemperatureOptimal ? 
+              <span className="text-green-400">Optimal</span> : 
+              <span className="text-yellow-400">Check</span>
+            }
+          </div>
         </div>
-        <div className={`flex items-center ${tempColor}`}>
-          <Thermometer size={14} className="mr-1" />
-          <span className="text-lg font-bold">{temperature}°C</span>
+        
+        <div className="flex items-end justify-between mt-1">
+          <div className="text-2xl font-bold">{temperature.toFixed(1)}°C</div>
+        </div>
+        
+        <div className="w-full mt-1">
+          <div className="h-1 w-full bg-white/10 rounded-full">
+            <div 
+              className={`h-full rounded-full ${isTemperatureOptimal ? 'bg-green-500' : 'bg-yellow-500'}`} 
+              style={{ width: `${Math.min(100, (temperature / 40) * 100)}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs mt-1 opacity-70">
+            <div>15°C</div>
+            <div>30°C</div>
+          </div>
         </div>
       </div>
-
-      {/* Humidity HUD */}
-      <div className="flex flex-col items-center">
-        <div className="w-20 h-36 relative mb-1">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={historyData}
-              margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
-            >
-              <defs>
-                <linearGradient id="humidityColorGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.6}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <Area
-                type="monotone"
-                dataKey="humidity"
-                stroke="#3b82f6"
-                fillOpacity={1}
-                fill="url(#humidityColorGradient)"
-                strokeWidth={1.5}
-                dot={false}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+      
+      {/* Humidity Chart */}
+      <div className={`glassmorphism rounded-lg px-3 py-2 ${heightClass}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Droplets size={16} className="mr-2 text-blue-400" />
+            <span className="text-xs uppercase font-medium">Humidity</span>
+          </div>
+          <div className="text-xs">
+            {isHumidityOptimal ? 
+              <span className="text-green-400">Optimal</span> : 
+              <span className="text-yellow-400">Check</span>
+            }
+          </div>
         </div>
-        <div className={`flex items-center ${humidityColor}`}>
-          <Droplets size={14} className="mr-1" />
-          <span className="text-lg font-bold">{humidity}%</span>
+        
+        <div className="flex items-end justify-between mt-1">
+          <div className="text-2xl font-bold">{humidity.toFixed(0)}%</div>
+        </div>
+        
+        <div className="w-full mt-1">
+          <div className="h-1 w-full bg-white/10 rounded-full">
+            <div 
+              className={`h-full rounded-full ${isHumidityOptimal ? 'bg-green-500' : 'bg-yellow-500'}`}
+              style={{ width: `${Math.min(100, humidity)}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs mt-1 opacity-70">
+            <div>50%</div>
+            <div>100%</div>
+          </div>
         </div>
       </div>
     </div>

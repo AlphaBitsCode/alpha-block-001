@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { LineChart as LineChartIcon } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
 interface DataPoint {
@@ -63,36 +62,25 @@ const MiniGraph: React.FC<MiniGraphProps> = ({ data }) => {
             axisLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
             tickLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
             interval="preserveStartEnd"
-            minTickGap={50}
-            tickFormatter={(value) => value}
+            minTickGap={40}
           />
           <YAxis 
             yAxisId="temperature"
             orientation="left"
-            domain={['dataMin - 2', 'dataMax + 2']}
+            domain={[20, 35]} // Fixed temperature range
             tick={{ fill: 'rgba(255, 255, 255, 0.7)', fontSize: 12 }} 
             axisLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
             tickLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
-            label={{ 
-              value: '°C', 
-              position: 'insideLeft',
-              angle: -90,
-              style: { textAnchor: 'middle', fill: 'rgba(255, 255, 255, 0.7)' }
-            }}
+            tickFormatter={(value) => `${value}°C`}
           />
           <YAxis 
             yAxisId="humidity"
             orientation="right"
-            domain={['dataMin - 5', 'dataMax + 5']}
+            domain={[70, 95]} // Fixed humidity range
             tick={{ fill: 'rgba(255, 255, 255, 0.7)', fontSize: 12 }} 
             axisLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
             tickLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
-            label={{ 
-              value: '%', 
-              position: 'insideRight',
-              angle: -90,
-              style: { textAnchor: 'middle', fill: 'rgba(255, 255, 255, 0.7)' }
-            }}
+            tickFormatter={(value) => `${value}%`}
           />
           <Tooltip
             contentStyle={{ 

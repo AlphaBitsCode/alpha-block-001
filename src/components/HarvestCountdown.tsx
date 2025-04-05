@@ -43,9 +43,9 @@ const HarvestCountdown: React.FC<HarvestCountdownProps> = ({ harvestDate }) => {
   }, [harvestDate]);
   
   return (
-    <div className="glassmorphism flex items-center bg-black/60 px-3 py-1.5 rounded-md text-sm text-foreground/90 whitespace-nowrap">
-      <Timer size={16} className="mr-2" />
-      <span>
+    <div className="text-white drop-shadow-md flex items-center">
+      <Timer size={16} className="mr-2 text-primary" />
+      <span className="text-sm font-medium">
         Harvest in: {timeRemaining.days}d {timeRemaining.hours}h {timeRemaining.minutes}m
       </span>
     </div>
