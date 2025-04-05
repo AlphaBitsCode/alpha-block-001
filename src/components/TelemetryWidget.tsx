@@ -30,14 +30,14 @@ const TelemetryWidget = forwardRef<HTMLDivElement, TelemetryWidgetProps>(({
   if (isCollapsed) return null;
   
   // Set default position if undefined
-  const positionStyle = position ? {
+  const positionStyle = position && position.x !== undefined && position.y !== undefined ? {
     left: `${position.x}px`,
     top: `${position.y}px`
   } : {};
   
   return (
     <div 
-      className={`glassmorphism absolute rounded-lg overflow-hidden animate-fade-in shadow-lg border border-white/10 ${widthClass} ${className}`}
+      className={`glassmorphism absolute rounded-lg overflow-hidden animate-fade-in shadow-lg border border-white/10 ${widthClass} ${className} z-20`}
       style={positionStyle}
       ref={ref}
     >

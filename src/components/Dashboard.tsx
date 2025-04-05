@@ -124,7 +124,7 @@ const Dashboard: React.FC = () => {
       <VideoFeed />
       
       {/* Header */}
-      <Header unitId="AB-127" />
+      <Header unitId="AB-001" />
       
       {/* Control Panel */}
       <ControlPanel 
