@@ -8,8 +8,7 @@ import {
   Droplets, 
   Sun,
   Moon,
-  Move,
-  MapPin
+  Move
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
@@ -54,9 +53,9 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
     const isActive = !widgetToggles[key];
     const widgetNames: Record<keyof WidgetToggleState, string> = {
       metrics: "Metrics Dashboard",
-      tasks: "Care Tasks",
+      tasks: "Care Plan",
       activity: "Activity Log",
-      graph: "Performance Graph",
+      graph: "Monitoring History",
       minimap: "Camera Position"
     };
     
@@ -90,6 +89,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
     });
   };
 
+  // Updated widget names and removed minimap toggle
   const widgets = [
     { 
       id: 'metrics', 
@@ -100,7 +100,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
     { 
       id: 'tasks', 
       icon: GanttChart, 
-      tooltip: "Care Tasks",
+      tooltip: "Care Plan",
       active: widgetToggles.tasks
     },
     { 
@@ -112,14 +112,8 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
     { 
       id: 'graph', 
       icon: LineChart, 
-      tooltip: "Performance Graph",
+      tooltip: "Monitoring History",
       active: widgetToggles.graph
-    },
-    {
-      id: 'minimap',
-      icon: MapPin,
-      tooltip: "Camera Position",
-      active: widgetToggles.minimap
     }
   ];
 

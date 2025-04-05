@@ -6,7 +6,7 @@ import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
 import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart, MapPin } from "lucide-react";
+import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart } from "lucide-react";
 import MetricsOverlay from "./MetricsOverlay";
 import TelemetryWidget from "./TelemetryWidget";
 import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
@@ -103,14 +103,8 @@ const Dashboard: React.FC = () => {
   });
   
   const graphWidget = useDraggable({ 
-    initialPosition: { x: window.innerWidth - 330, y: 320 },
+    initialPosition: { x: window.innerWidth - 380, y: 320 },
     bounds: { top: 70, right: window.innerWidth - 10 }
-  });
-  
-  // Add a new draggable hook for the minimap
-  const minimapWidget = useDraggable({
-    initialPosition: { x: 20, y: 80 },
-    bounds: { top: 70, left: 10 }
   });
   
   const toggleHumidifier = () => {
@@ -163,16 +157,11 @@ const Dashboard: React.FC = () => {
       {/* Toaster for notifications */}
       <Toaster position="top-center" />
       
-      {/* Draggable Mini Map */}
-      {!isMobile && widgetToggles.minimap && (
-        <TelemetryWidget 
-          title="Camera Position" 
-          icon={<MapPin size={18} />}
-          position={minimapWidget.position}
-          onMouseDown={minimapWidget.onMouseDown}
-          ref={minimapWidget.dragRef}
-          widthClass="w-auto"
-        >
+      {/* Fixed MiniMap in bottom-right corner */}
+      <div className="fixed bottom-4 right-4 z-40 flex gap-2">
+        <div className="glassmorphism p-1 rounded-md border border-white/10 shadow-lg 
+                      dark:bg-black/40 dark:border-white/10 
+                      light:bg-white/70 light:border-white/20">
           <div className="flex flex-row gap-1">
             {/* Main minimap */}
             <div className="relative w-32 h-32 bg-black/20 dark:bg-black/40 light:bg-white/30 rounded overflow-hidden">
@@ -233,8 +222,9 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-        </TelemetryWidget>
-      )}
+          <div className="text-xs text-center font-medium text-foreground py-1">Camera Position</div>
+        </div>
+      </div>
       
       {/* Robot Controls Dialog/Drawer */}
       <RobotControlDialog />
@@ -277,7 +267,7 @@ const Dashboard: React.FC = () => {
           {/* Tasks Widget */}
           {widgetToggles.tasks && (
             <TelemetryWidget 
-              title="Care Tasks" 
+              title="Care Plan" 
               icon={<GanttChart size={18} />}
               position={tasksWidget.position}
               onMouseDown={tasksWidget.onMouseDown}
@@ -303,12 +293,12 @@ const Dashboard: React.FC = () => {
           {/* Graph Widget */}
           {widgetToggles.graph && (
             <TelemetryWidget 
-              title="Performance Graph" 
+              title="Monitoring History" 
               icon={<LineChart size={18} />}
               position={graphWidget.position}
               onMouseDown={graphWidget.onMouseDown}
               ref={graphWidget.dragRef}
-              widthClass="w-96"
+              widthClass="w-[470px]"
             >
               <MiniGraph data={mockGraphData} />
             </TelemetryWidget>
