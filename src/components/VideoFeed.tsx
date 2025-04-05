@@ -1,74 +1,64 @@
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface VideoFeedProps {
   streamUrl?: string;
 }
 
 const VideoFeed: React.FC<VideoFeedProps> = ({ streamUrl }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const defaultStreamUrl = streamUrl || "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8";
+  const [imageUrl, setImageUrl] = useState("https://lakeview.secondbrains.tech/cam/office_4.jpg");
+  const [timestamp, setTimestamp] = useState(Date.now());
 
   useEffect(() => {
-    const videoElement = videoRef.current;
-    
-    if (!videoElement) return;
+    // Set initial image
+    const img = new Image();
+    img.onload = () => setIsLoading(false);
+    img.onerror = () => {
+      console.error("Failed to load image");
+      setError("Failed to load image");
+      setIsLoading(false);
+    };
+    img.src = imageUrl + "?t=" + timestamp;
 
-    // Configure video stream
-    const configureVideoStream = async () => {
+    // Set up refresh interval (30 seconds)
+    const refreshInterval = setInterval(() => {
+      setTimestamp(Date.now());
+    }, 30000); // 30 seconds
+
+    return () => {
+      clearInterval(refreshInterval);
+    };
+  }, [imageUrl]);
+
+  // Update the image when timestamp changes
+  useEffect(() => {
+    const refreshImage = async () => {
+      setIsLoading(true);
       try {
-        if ('srcObject' in videoElement) {
-          try {
-            // Attempt to load the video
-            videoElement.src = defaultStreamUrl;
-            
-            videoElement.onloadeddata = () => {
-              setIsLoading(false);
-            };
-            
-            videoElement.onerror = () => {
-              setError("Failed to load video stream");
-              // Fall back to test pattern
-              setIsLoading(false);
-            };
-            
-            videoElement.load();
-            videoElement.play().catch(e => {
-              console.error("Video playback failed:", e);
-              setError("Video playback failed. Please check your connection.");
-            });
-          } catch (err) {
-            console.error("Error setting up video:", err);
-            setError("Error setting up video stream");
-            setIsLoading(false);
-          }
-        }
+        const img = new Image();
+        img.onload = () => setIsLoading(false);
+        img.onerror = () => {
+          setError("Failed to load image");
+          setIsLoading(false);
+        };
+        img.src = imageUrl + "?t=" + timestamp;
       } catch (err) {
-        console.error("Error accessing camera:", err);
-        setError("Could not access camera");
+        console.error("Error refreshing image:", err);
+        setError("Error refreshing image");
         setIsLoading(false);
       }
     };
 
-    configureVideoStream();
-
-    return () => {
-      if (videoElement) {
-        videoElement.pause();
-        videoElement.src = "";
-        videoElement.load();
-      }
-    };
-  }, [defaultStreamUrl]);
+    refreshImage();
+  }, [timestamp, imageUrl]);
 
   return (
     <div className="relative w-full h-full overflow-hidden">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <div className="animate-pulse text-white text-xl">Loading video feed...</div>
+          <div className="animate-pulse text-white text-xl">Loading feed...</div>
         </div>
       )}
       
@@ -77,24 +67,23 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ streamUrl }) => {
           <div className="mb-4 text-xl text-red-400">{error}</div>
           <div className="w-full max-w-md h-48 bg-gray-800 rounded-md flex items-center justify-center">
             <div className="text-gray-400 text-center">
-              <div className="text-4xl mb-2">📹</div>
-              <div>Video feed unavailable</div>
+              <div className="text-4xl mb-2">📷</div>
+              <div>Image feed unavailable</div>
               <div className="text-sm mt-2 text-gray-500">Using mock background</div>
             </div>
           </div>
         </div>
       )}
       
-      <video 
-        ref={videoRef}
+      {/* Image element to display the feed */}
+      <img
+        src={`${imageUrl}?t=${timestamp}`}
+        alt="Live feed"
         className="absolute inset-0 w-full h-full object-cover"
-        autoPlay 
-        playsInline
-        muted
-        loop
+        style={{ display: isLoading || error ? 'none' : 'block' }}
       />
       
-      {/* Fallback background in case video fails to load */}
+      {/* Fallback background in case image fails to load */}
       <div 
         className="absolute inset-0 bg-gradient-to-b from-gray-800 to-gray-900 -z-10"
         style={{
