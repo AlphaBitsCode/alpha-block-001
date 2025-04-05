@@ -9,14 +9,45 @@ import BatteryWidget from "./BatteryWidget";
 import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Fan, Droplets, AlertCircle, ThermometerIcon, Check } from "lucide-react";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
-  { id: "1", message: "Fan started", timestamp: "2 min ago", type: "info" as const },
-  { id: "2", message: "Door opened", timestamp: "15 min ago", type: "info" as const },
-  { id: "3", message: "Humidity alert", timestamp: "1 hour ago", type: "warning" as const },
-  { id: "4", message: "New growth detected", timestamp: "2 hours ago", type: "info" as const },
-  { id: "5", message: "Temperature low", timestamp: "3 hours ago", type: "warning" as const },
+  { 
+    id: "1", 
+    message: "Humidity dropped below 70%, humidifier activated", 
+    timestamp: "2 min ago", 
+    type: "warning" as const,
+    icon: <Droplets size={16} className="text-yellow-400" />
+  },
+  { 
+    id: "2", 
+    message: "Humidifier running at 80% capacity", 
+    timestamp: "1 min ago", 
+    type: "info" as const,
+    icon: <Fan size={16} className="text-blue-400" />
+  },
+  { 
+    id: "3", 
+    message: "Humidity levels restored to optimal range", 
+    timestamp: "Just now", 
+    type: "success" as const,
+    icon: <Check size={16} className="text-green-400" />
+  },
+  { 
+    id: "4", 
+    message: "Temperature adjustment initiated", 
+    timestamp: "15 min ago", 
+    type: "info" as const,
+    icon: <ThermometerIcon size={16} className="text-blue-400" />
+  },
+  { 
+    id: "5", 
+    message: "New growth detected in section A3", 
+    timestamp: "1 hour ago", 
+    type: "info" as const,
+    icon: <Check size={16} className="text-green-400" />
+  },
 ];
 
 // Tropical weather mock data for Pink Oyster mushrooms
@@ -71,11 +102,10 @@ const Dashboard: React.FC = () => {
         <MiniGraph data={mockGraphData} />
       </div>
       
-      {/* Left Widgets (Desktop Only) */}
+      {/* Left Widgets (Desktop Only) - Removed duplicated ActivityLogWidget */}
       {!isMobile && (
         <div className="fixed top-20 left-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4">
           <MushroomHealthWidget status="healthy" lastUpdated="10 min ago" />
-          {/* Removed duplicated ActivityLogWidget here */}
         </div>
       )}
     </div>
