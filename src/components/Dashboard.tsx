@@ -6,7 +6,7 @@ import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
 import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart } from "lucide-react";
+import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart, MapPin } from "lucide-react";
 import MetricsOverlay from "./MetricsOverlay";
 import TelemetryWidget from "./TelemetryWidget";
 import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
@@ -107,6 +107,12 @@ const Dashboard: React.FC = () => {
     bounds: { top: 70, right: window.innerWidth - 10 }
   });
   
+  // Add a new draggable hook for the minimap
+  const minimapWidget = useDraggable({
+    initialPosition: { x: 20, y: 80 },
+    bounds: { top: 70, left: 10 }
+  });
+  
   const toggleHumidifier = () => {
     setIsHumidifierOn(!isHumidifierOn);
   };
@@ -140,7 +146,190 @@ const Dashboard: React.FC = () => {
     import('./RobotControlsContent').catch(console.error);
   }, []);
 
-  const RobotControlDialog = () => {
+  return (
+    <div className="relative w-full h-screen overflow-hidden bg-background">
+      {/* Video Feed */}
+      <VideoFeed />
+      
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-3 md:px-6">
+        <Header unitId="AB-001" />
+        <NavigationMenuComponent />
+      </div>
+      
+      {/* User Name Prompt */}
+      <UserNamePrompt />
+      
+      {/* Toaster for notifications */}
+      <Toaster position="top-center" />
+      
+      {/* Draggable Mini Map */}
+      {!isMobile && widgetToggles.minimap && (
+        <TelemetryWidget 
+          title="Camera Position" 
+          icon={<MapPin size={18} />}
+          position={minimapWidget.position}
+          onMouseDown={minimapWidget.onMouseDown}
+          ref={minimapWidget.dragRef}
+          widthClass="w-auto"
+        >
+          <div className="flex flex-row gap-1">
+            {/* Main minimap */}
+            <div className="relative w-32 h-32 bg-black/20 dark:bg-black/40 light:bg-white/30 rounded overflow-hidden">
+              {/* Grid lines */}
+              <div className="absolute inset-0 grid grid-cols-4 gap-0 pointer-events-none">
+                {Array(3).fill(0).map((_, i) => (
+                  <div 
+                    key={`v-${i}`} 
+                    className="border-r dark:border-white/10 light:border-black/10 h-full" 
+                    style={{left: `${(i + 1) * 25}%`}} 
+                  />
+                ))}
+                {Array(3).fill(0).map((_, i) => (
+                  <div 
+                    key={`h-${i}`} 
+                    className="border-b dark:border-white/10 light:border-black/10 w-full" 
+                    style={{top: `${(i + 1) * 25}%`}} 
+                  />
+                ))}
+              </div>
+              
+              {/* Camera position indicator */}
+              <div 
+                className="absolute w-3 h-3 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_5px_rgba(59,130,246,0.7)]"
+                style={{ 
+                  left: `${cameraPosition.x}%`, 
+                  top: `${cameraPosition.y}%`,
+                }}
+              />
+              
+              {/* View cone / Direction indicator */}
+              <div 
+                className="absolute w-12 h-12 bg-blue-500/20 rounded-full transform -translate-x-1/2 -translate-y-1/2"
+                style={{ 
+                  left: `${cameraPosition.x}%`, 
+                  top: `${cameraPosition.y}%`,
+                }}
+              />
+              
+              {/* Position coordinates display */}
+              <div className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 rounded text-xs text-white/90 font-mono">
+                X:{Math.round(cameraPosition.x)}, Y:{Math.round(cameraPosition.y)}
+              </div>
+              
+              <div className="absolute inset-0 border dark:border-white/20 light:border-black/10 rounded pointer-events-none" />
+            </div>
+            
+            {/* Camera preview */}
+            <div className="relative w-32 h-32 overflow-hidden rounded-md">
+              <img 
+                src={`https://lakeview.secondbrains.tech/cam/office_2.jpg?t=${Date.now()}`} 
+                alt="Camera Feed"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 border dark:border-white/10 light:border-black/10 rounded-md pointer-events-none" />
+              <div className="absolute bottom-1 left-1 right-1 text-center bg-black/50 text-xs text-white/90 px-1 py-0.5 rounded">
+                Live Feed
+              </div>
+            </div>
+          </div>
+        </TelemetryWidget>
+      )}
+      
+      {/* Robot Controls Dialog/Drawer */}
+      <RobotControlDialog />
+      
+      {/* Vertical Toolbar */}
+      <VerticalToolbar 
+        widgetToggles={widgetToggles} 
+        setWidgetToggles={setWidgetToggles}
+        isHumidifierOn={isHumidifierOn}
+        toggleHumidifier={toggleHumidifier}
+        isLightOn={isLightOn}
+        toggleLight={toggleLight}
+        onOpenRobotControls={handleOpenRobotControls}
+        isRobotControlsOpen={showRobotControls}
+      />
+      
+      {/* HUD-style Metrics Overlay */}
+      <MetricsOverlay 
+        temperature={metricsData.temperature}
+        humidity={metricsData.humidity}
+        historyData={mockGraphData}
+      />
+      
+      {/* Draggable Widgets */}
+      {!isMobile && (
+        <>
+          {/* Metrics Widget */}
+          {widgetToggles.metrics && (
+            <TelemetryWidget 
+              title="System Metrics" 
+              icon={<Settings size={18} />}
+              position={metricsWidget.position}
+              onMouseDown={metricsWidget.onMouseDown}
+              ref={metricsWidget.dragRef}
+            >
+              <ConsolidatedMetricsWidget {...metricsData} />
+            </TelemetryWidget>
+          )}
+          
+          {/* Tasks Widget */}
+          {widgetToggles.tasks && (
+            <TelemetryWidget 
+              title="Care Tasks" 
+              icon={<GanttChart size={18} />}
+              position={tasksWidget.position}
+              onMouseDown={tasksWidget.onMouseDown}
+              ref={tasksWidget.dragRef}
+            >
+              <CareTaskWidget />
+            </TelemetryWidget>
+          )}
+          
+          {/* Activity Widget */}
+          {widgetToggles.activity && (
+            <TelemetryWidget 
+              title="Activity Log" 
+              icon={<ListOrdered size={18} />}
+              position={activityWidget.position}
+              onMouseDown={activityWidget.onMouseDown}
+              ref={activityWidget.dragRef}
+            >
+              <ActivityLogWidget logs={mockActivityLogs} />
+            </TelemetryWidget>
+          )}
+          
+          {/* Graph Widget */}
+          {widgetToggles.graph && (
+            <TelemetryWidget 
+              title="Performance Graph" 
+              icon={<LineChart size={18} />}
+              position={graphWidget.position}
+              onMouseDown={graphWidget.onMouseDown}
+              ref={graphWidget.dragRef}
+              widthClass="w-96"
+            >
+              <MiniGraph data={mockGraphData} />
+            </TelemetryWidget>
+          )}
+        </>
+      )}
+      
+      {/* Mobile Widgets (simplified) */}
+      {isMobile && (
+        <div className="fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4">
+          {widgetToggles.metrics && <ConsolidatedMetricsWidget {...metricsData} />}
+          {widgetToggles.tasks && <CareTaskWidget />}
+          {widgetToggles.activity && <ActivityLogWidget logs={mockActivityLogs} />}
+          {widgetToggles.graph && <MiniGraph data={mockGraphData} />}
+        </div>
+      )}
+    </div>
+  );
+  
+  // Robot Control Dialog function
+  function RobotControlDialog() {
     if (isMobile) {
       return (
         <Drawer open={showRobotControls} onOpenChange={setShowRobotControls}>
@@ -175,154 +364,6 @@ const Dashboard: React.FC = () => {
       </Dialog>
     );
   };
-
-  return (
-    <div className="relative w-full h-screen overflow-hidden bg-background">
-      {/* Video Feed */}
-      <VideoFeed />
-      
-      {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-3 md:px-6">
-        <Header unitId="AB-001" />
-        <NavigationMenuComponent />
-      </div>
-      
-      {/* User Name Prompt */}
-      <UserNamePrompt />
-      
-      {/* Toaster for notifications */}
-      <Toaster position="top-center" />
-      
-      {/* Mini Map */}
-      <MiniMap position={cameraPosition} visible={widgetToggles.minimap} />
-      
-      {/* Robot Controls Dialog/Drawer */}
-      <RobotControlDialog />
-      
-      {/* Vertical Toolbar */}
-      <VerticalToolbar 
-        widgetToggles={widgetToggles} 
-        setWidgetToggles={setWidgetToggles}
-        isHumidifierOn={isHumidifierOn}
-        toggleHumidifier={toggleHumidifier}
-        isLightOn={isLightOn}
-        toggleLight={toggleLight}
-        onOpenRobotControls={handleOpenRobotControls}
-        isRobotControlsOpen={showRobotControls}
-      />
-      
-      {/* HUD-style Metrics Overlay */}
-      <MetricsOverlay 
-        temperature={metricsData.temperature}
-        humidity={metricsData.humidity}
-        historyData={mockGraphData}
-      />
-      
-      {/* Draggable Widgets */}
-      {!isMobile && (
-        <>
-          {/* Metrics Widget */}
-          {metricsWidget.isCollapsed && widgetToggles.metrics ? (
-            <WidgetIcon 
-              icon={Settings} 
-              label="Metrics" 
-              onClick={metricsWidget.toggleCollapse}
-              position={metricsWidget.position}
-            />
-          ) : widgetToggles.metrics && (
-            <TelemetryWidget 
-              title="System Metrics" 
-              icon={<Settings size={18} />}
-              position={metricsWidget.position}
-              isCollapsed={!widgetToggles.metrics}
-              onMinimizeClick={metricsWidget.toggleCollapse}
-              onMouseDown={metricsWidget.onMouseDown}
-              ref={metricsWidget.dragRef}
-            >
-              <ConsolidatedMetricsWidget {...metricsData} />
-            </TelemetryWidget>
-          )}
-          
-          {/* Tasks Widget */}
-          {tasksWidget.isCollapsed && widgetToggles.tasks ? (
-            <WidgetIcon 
-              icon={GanttChart} 
-              label="Tasks" 
-              onClick={tasksWidget.toggleCollapse}
-              position={tasksWidget.position}
-            />
-          ) : widgetToggles.tasks && (
-            <TelemetryWidget 
-              title="Care Tasks" 
-              icon={<GanttChart size={18} />}
-              position={tasksWidget.position}
-              isCollapsed={!widgetToggles.tasks}
-              onMinimizeClick={tasksWidget.toggleCollapse}
-              onMouseDown={tasksWidget.onMouseDown}
-              ref={tasksWidget.dragRef}
-            >
-              <CareTaskWidget />
-            </TelemetryWidget>
-          )}
-          
-          {/* Activity Widget */}
-          {activityWidget.isCollapsed && widgetToggles.activity ? (
-            <WidgetIcon 
-              icon={ListOrdered} 
-              label="Activity Log" 
-              onClick={activityWidget.toggleCollapse}
-              position={activityWidget.position}
-            />
-          ) : widgetToggles.activity && (
-            <TelemetryWidget 
-              title="Activity Log" 
-              icon={<ListOrdered size={18} />}
-              position={activityWidget.position}
-              isCollapsed={!widgetToggles.activity}
-              onMinimizeClick={activityWidget.toggleCollapse}
-              onMouseDown={activityWidget.onMouseDown}
-              ref={activityWidget.dragRef}
-            >
-              <ActivityLogWidget logs={mockActivityLogs} />
-            </TelemetryWidget>
-          )}
-          
-          {/* Graph Widget */}
-          {graphWidget.isCollapsed && widgetToggles.graph ? (
-            <WidgetIcon 
-              icon={LineChart} 
-              label="Performance Graph" 
-              onClick={graphWidget.toggleCollapse}
-              position={graphWidget.position}
-            />
-          ) : widgetToggles.graph && (
-            <TelemetryWidget 
-              title="Performance Graph" 
-              icon={<LineChart size={18} />}
-              position={graphWidget.position}
-              isCollapsed={!widgetToggles.graph}
-              onMinimizeClick={graphWidget.toggleCollapse}
-              onMouseDown={graphWidget.onMouseDown}
-              ref={graphWidget.dragRef}
-              widthClass="w-96"
-            >
-              <MiniGraph data={mockGraphData} />
-            </TelemetryWidget>
-          )}
-        </>
-      )}
-      
-      {/* Mobile Widgets (simplified) */}
-      {isMobile && (
-        <div className="fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4">
-          {widgetToggles.metrics && <ConsolidatedMetricsWidget {...metricsData} />}
-          {widgetToggles.tasks && <CareTaskWidget />}
-          {widgetToggles.activity && <ActivityLogWidget logs={mockActivityLogs} />}
-          {widgetToggles.graph && <MiniGraph data={mockGraphData} />}
-        </div>
-      )}
-    </div>
-  );
 };
 
 export default Dashboard;

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   ListOrdered, 
@@ -48,6 +49,20 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
   
   const toggleWidget = (key: keyof WidgetToggleState) => {
     setWidgetToggles(prev => ({ ...prev, [key]: !prev[key] }));
+    
+    // Show feedback toast when toggling widgets
+    const isActive = !widgetToggles[key];
+    const widgetNames: Record<keyof WidgetToggleState, string> = {
+      metrics: "Metrics Dashboard",
+      tasks: "Care Tasks",
+      activity: "Activity Log",
+      graph: "Performance Graph",
+      minimap: "Camera Position"
+    };
+    
+    toast.success(`${widgetNames[key]} ${isActive ? 'shown' : 'hidden'}`, {
+      description: isActive ? `${widgetNames[key]} is now visible` : `${widgetNames[key]} is now hidden`,
+    });
   };
 
   const handleToggleHumidifier = () => {
@@ -103,7 +118,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
     {
       id: 'minimap',
       icon: MapPin,
-      tooltip: "Navigation Minimap",
+      tooltip: "Camera Position",
       active: widgetToggles.minimap
     }
   ];

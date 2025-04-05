@@ -13,6 +13,8 @@ export const getUserName = (): string | null => {
 
 export const setUserName = (name: string): void => {
   localStorage.setItem(USER_NAME_KEY, name);
+  // Dispatch a custom event to notify other components
+  window.dispatchEvent(new Event("usernameChanged"));
 };
 
 const UserNamePrompt: React.FC = () => {

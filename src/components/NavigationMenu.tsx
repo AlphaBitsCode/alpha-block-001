@@ -4,7 +4,6 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger 
 } from "@/components/ui/navigation-menu";
@@ -24,13 +23,17 @@ const NavigationMenuComponent: React.FC = () => {
     updateUserName();
     window.addEventListener("storage", updateUserName);
     
+    // Also listen for custom events for when username changes
+    window.addEventListener("usernameChanged", updateUserName);
+    
     return () => {
       window.removeEventListener("storage", updateUserName);
+      window.removeEventListener("usernameChanged", updateUserName);
     };
   }, []);
 
   return (
-    <NavigationMenu className="hidden md:flex">
+    <NavigationMenu className="md:flex">
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger className="bg-primary/10 px-3 py-1 font-medium flex items-center gap-2">

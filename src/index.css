@@ -101,7 +101,7 @@
   }
   
   .light .glassmorphism {
-    @apply bg-white/70 backdrop-blur-md border border-black/10 shadow-lg;
+    @apply bg-white/70 backdrop-blur-md border border-black/20 shadow-lg;
   }
   
   .dark .glassmorphism {
@@ -130,4 +130,33 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+/* Improve text contrast in light mode */
+.light {
+  --widget-text: 240 5% 15%;
+  --widget-text-secondary: 240 5% 30%;
+  --widget-text-tertiary: 240 5% 40%;
+}
+
+.light .text-foreground {
+  color: hsl(var(--widget-text));
+}
+
+.light .text-foreground\/90 {
+  color: hsl(var(--widget-text-secondary));
+}
+
+.light .text-foreground\/60 {
+  color: hsl(var(--widget-text-tertiary));
+}
+
+.light .glassmorphism {
+  color: hsl(var(--widget-text));
+}
+
+/* Fix widget titles to ensure good contrast in both modes */
+.light h3.text-foreground\/90 {
+  color: hsl(var(--widget-text));
+  font-weight: 600;
 }

@@ -8,7 +8,7 @@ interface RobotControlsWidgetProps {
   initialPosition?: Position;
   onPositionChange?: (position: Position) => void;
   onOpenDialog: () => void;
-  isDialogOpen?: boolean; // Add this prop to track dialog state
+  isDialogOpen?: boolean;
 }
 
 const RobotControlsWidget: React.FC<RobotControlsWidgetProps> = ({
