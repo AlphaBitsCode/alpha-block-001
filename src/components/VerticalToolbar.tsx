@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   ListOrdered, 
@@ -32,6 +31,7 @@ interface VerticalToolbarProps {
   isLightOn: boolean;
   toggleLight: () => void;
   onOpenRobotControls: () => void;
+  isRobotControlsOpen?: boolean;
 }
 
 const VerticalToolbar: React.FC<VerticalToolbarProps> = ({ 
@@ -41,7 +41,8 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
   toggleHumidifier,
   isLightOn,
   toggleLight,
-  onOpenRobotControls
+  onOpenRobotControls,
+  isRobotControlsOpen = false
 }) => {
   const { theme, setTheme } = useTheme();
   
@@ -128,7 +129,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
       id: 'camera',
       icon: Move,
       tooltip: "Robot Camera Controls",
-      active: false,
+      active: isRobotControlsOpen,
       onClick: onOpenRobotControls
     },
     {

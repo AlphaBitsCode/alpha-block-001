@@ -18,6 +18,7 @@ import { Toaster } from "sonner";
 import MiniMap from "./MiniMap";
 import UserNamePrompt from "./UserNamePrompt";
 import NavigationMenuComponent from "./NavigationMenu";
+import RobotControlsContent from "./RobotControlsContent";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -105,7 +106,7 @@ const Dashboard: React.FC = () => {
     initialPosition: { x: window.innerWidth - 330, y: 320 },
     bounds: { top: 70, right: window.innerWidth - 10 }
   });
-
+  
   const toggleHumidifier = () => {
     setIsHumidifierOn(!isHumidifierOn);
   };
@@ -133,9 +134,13 @@ const Dashboard: React.FC = () => {
     setShowRobotControls(true);
   };
 
+  // Pre-load the RobotControlsContent to prevent flashing
+  useEffect(() => {
+    // This ensures the component is loaded before it's needed
+    import('./RobotControlsContent').catch(console.error);
+  }, []);
+
   const RobotControlDialog = () => {
-    const RobotControlContent = React.lazy(() => import('./RobotControlsContent'));
-    
     if (isMobile) {
       return (
         <Drawer open={showRobotControls} onOpenChange={setShowRobotControls}>
@@ -144,14 +149,10 @@ const Dashboard: React.FC = () => {
               <DrawerTitle>Camera Position Controls</DrawerTitle>
             </DrawerHeader>
             <div className="p-4">
-              {showRobotControls && (
-                <React.Suspense fallback={<div className="p-4">Loading controls...</div>}>
-                  <RobotControlContent 
-                    initialPosition={cameraPosition}
-                    onPositionChange={handleRobotControlPositionChange}
-                  />
-                </React.Suspense>
-              )}
+              <RobotControlsContent 
+                initialPosition={cameraPosition}
+                onPositionChange={handleRobotControlPositionChange}
+              />
             </div>
           </DrawerContent>
         </Drawer>
@@ -165,14 +166,10 @@ const Dashboard: React.FC = () => {
             <DialogTitle>Camera Position Controls</DialogTitle>
           </DialogHeader>
           <div>
-            {showRobotControls && (
-              <React.Suspense fallback={<div className="p-4">Loading controls...</div>}>
-                <RobotControlContent 
-                  initialPosition={cameraPosition}
-                  onPositionChange={handleRobotControlPositionChange}
-                />
-              </React.Suspense>
-            )}
+            <RobotControlsContent 
+              initialPosition={cameraPosition}
+              onPositionChange={handleRobotControlPositionChange}
+            />
           </div>
         </DialogContent>
       </Dialog>
@@ -211,6 +208,7 @@ const Dashboard: React.FC = () => {
         isLightOn={isLightOn}
         toggleLight={toggleLight}
         onOpenRobotControls={handleOpenRobotControls}
+        isRobotControlsOpen={showRobotControls}
       />
       
       {/* HUD-style Metrics Overlay */}
