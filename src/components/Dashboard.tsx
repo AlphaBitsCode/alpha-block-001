@@ -63,12 +63,12 @@ const Dashboard: React.FC = () => {
   const isMobile = useIsMobile();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Widget positions
+  // Initial widget positions - properly spaced to avoid overlapping
   const [widgetPositions, setWidgetPositions] = useState({
-    metrics: { x: isMobile ? 10 : window.innerWidth - 400, y: 80 },
-    care: { x: isMobile ? 10 : window.innerWidth - 400, y: 240 },
-    activity: { x: isMobile ? 10 : window.innerWidth - 400, y: 500 },
-    graph: { x: isMobile ? 10 : window.innerWidth - 400, y: 700 }
+    metrics: { x: isMobile ? 10 : 20, y: 80 },
+    care: { x: isMobile ? 10 : 20, y: 330 },
+    activity: { x: isMobile ? 10 : window.innerWidth - 360, y: 80 },
+    graph: { x: isMobile ? 10 : window.innerWidth - 360, y: 360 }
   });
 
   const toggleCollapse = () => {
@@ -106,13 +106,22 @@ const Dashboard: React.FC = () => {
         </button>
       )}
       
-      {/* Widgets */}
+      {/* Desktop widgets with fixed positions */}
       {!isMobile && (
         <>
-          <CareTaskWidget />
-          <ConsolidatedMetricsWidget {...metricsData} />
-          <ActivityLogWidget logs={mockActivityLogs} />
-          <MiniGraph data={mockGraphData} />
+          <div className="fixed top-20 left-4 z-40">
+            <ConsolidatedMetricsWidget {...metricsData} />
+            <div className="mt-4">
+              <CareTaskWidget />
+            </div>
+          </div>
+          
+          <div className="fixed top-20 right-4 z-40">
+            <ActivityLogWidget logs={mockActivityLogs} />
+            <div className="mt-4">
+              <MiniGraph data={mockGraphData} />
+            </div>
+          </div>
         </>
       )}
       

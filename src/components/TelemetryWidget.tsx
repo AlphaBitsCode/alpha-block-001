@@ -21,7 +21,7 @@ const TelemetryWidget: React.FC<TelemetryWidgetProps> = ({
   onMinimizeClick
 }) => {
   return (
-    <div className={`glassmorphism rounded-lg overflow-hidden animate-fade-in ${className}`}>
+    <div className={`glassmorphism rounded-lg overflow-hidden animate-fade-in shadow-lg border border-white/10 ${className}`}>
       <div 
         className="flex items-center justify-between p-3 border-b border-white/10 cursor-move"
         onMouseDown={onMouseDown}
