@@ -5,12 +5,11 @@ import {
   GanttChart, 
   Settings, 
   LineChart, 
-  Thermometer, 
   Droplets, 
-  Battery,
   Sun,
   Moon,
-  Move
+  Move,
+  MapPin
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
@@ -22,6 +21,7 @@ export interface WidgetToggleState {
   tasks: boolean;
   activity: boolean;
   graph: boolean;
+  minimap: boolean;
 }
 
 interface VerticalToolbarProps {
@@ -98,6 +98,12 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
       icon: LineChart, 
       tooltip: "Performance Graph",
       active: widgetToggles.graph
+    },
+    {
+      id: 'minimap',
+      icon: MapPin,
+      tooltip: "Navigation Minimap",
+      active: widgetToggles.minimap
     }
   ];
 
@@ -119,18 +125,18 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
       color: isLightOn ? "text-yellow-400" : "text-foreground/60"
     },
     {
-      id: 'theme',
-      icon: theme === 'dark' ? Moon : Sun,
-      tooltip: theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode",
-      active: false,
-      onClick: toggleThemeMode
-    },
-    {
       id: 'camera',
       icon: Move,
       tooltip: "Robot Camera Controls",
       active: false,
       onClick: onOpenRobotControls
+    },
+    {
+      id: 'theme',
+      icon: theme === 'dark' ? Moon : Sun,
+      tooltip: theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode",
+      active: false,
+      onClick: toggleThemeMode
     }
   ];
 

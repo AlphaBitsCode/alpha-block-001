@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import VideoFeed from "./VideoFeed";
 import ConsolidatedMetricsWidget from "./ConsolidatedMetricsWidget";
@@ -81,7 +81,8 @@ const Dashboard: React.FC = () => {
     metrics: true,
     tasks: true,
     activity: true,
-    graph: true
+    graph: true,
+    minimap: true
   });
 
   // Draggable hooks for each widget
@@ -142,12 +143,16 @@ const Dashboard: React.FC = () => {
             <DrawerHeader>
               <DrawerTitle>Camera Position Controls</DrawerTitle>
             </DrawerHeader>
-            <React.Suspense fallback={<div className="p-4">Loading controls...</div>}>
-              <RobotControlContent 
-                initialPosition={cameraPosition}
-                onPositionChange={handleRobotControlPositionChange}
-              />
-            </React.Suspense>
+            <div className="p-4">
+              {showRobotControls && (
+                <React.Suspense fallback={<div className="p-4">Loading controls...</div>}>
+                  <RobotControlContent 
+                    initialPosition={cameraPosition}
+                    onPositionChange={handleRobotControlPositionChange}
+                  />
+                </React.Suspense>
+              )}
+            </div>
           </DrawerContent>
         </Drawer>
       );
@@ -159,12 +164,16 @@ const Dashboard: React.FC = () => {
           <DialogHeader>
             <DialogTitle>Camera Position Controls</DialogTitle>
           </DialogHeader>
-          <React.Suspense fallback={<div className="p-4">Loading controls...</div>}>
-            <RobotControlContent 
-              initialPosition={cameraPosition}
-              onPositionChange={handleRobotControlPositionChange}
-            />
-          </React.Suspense>
+          <div>
+            {showRobotControls && (
+              <React.Suspense fallback={<div className="p-4">Loading controls...</div>}>
+                <RobotControlContent 
+                  initialPosition={cameraPosition}
+                  onPositionChange={handleRobotControlPositionChange}
+                />
+              </React.Suspense>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -188,7 +197,7 @@ const Dashboard: React.FC = () => {
       <Toaster position="top-center" />
       
       {/* Mini Map */}
-      <MiniMap position={cameraPosition} />
+      <MiniMap position={cameraPosition} visible={widgetToggles.minimap} />
       
       {/* Robot Controls Dialog/Drawer */}
       <RobotControlDialog />

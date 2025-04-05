@@ -4,12 +4,15 @@ import { Position } from "@/hooks/use-draggable";
 
 interface MiniMapProps {
   position: Position;
+  visible?: boolean;
 }
 
-const MiniMap: React.FC<MiniMapProps> = ({ position }) => {
+const MiniMap: React.FC<MiniMapProps> = ({ position, visible = true }) => {
   // Convert the position (0-100) to the map position (0-100%)
   const mapX = position.x;
   const mapY = position.y;
+  
+  if (!visible) return null;
   
   return (
     <div className="fixed top-20 left-4 z-40 glassmorphism p-1 rounded-md border border-white/10 shadow-lg">
@@ -41,6 +44,11 @@ const MiniMap: React.FC<MiniMapProps> = ({ position }) => {
             top: `${mapY}%`,
           }}
         />
+        
+        {/* Position coordinates display */}
+        <div className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 rounded text-xs text-white/90 font-mono">
+          X:{Math.round(mapX)}, Y:{Math.round(mapY)}
+        </div>
         
         <div className="absolute inset-0 border border-white/20 rounded pointer-events-none" />
       </div>

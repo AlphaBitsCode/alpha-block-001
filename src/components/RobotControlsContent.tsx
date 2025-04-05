@@ -19,6 +19,11 @@ const RobotControlsContent: React.FC<RobotControlsContentProps> = ({
   const markerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   
+  // Initialize position from props
+  useEffect(() => {
+    setPosition(initialPosition);
+  }, [initialPosition]);
+  
   // Handle position update
   const updatePosition = (clientX: number, clientY: number) => {
     if (!canvasRef.current || !markerRef.current) return;
@@ -33,6 +38,7 @@ const RobotControlsContent: React.FC<RobotControlsContentProps> = ({
   
   // Mouse event handlers
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default behavior
     setIsDragging(true);
     updatePosition(e.clientX, e.clientY);
   };
@@ -48,6 +54,7 @@ const RobotControlsContent: React.FC<RobotControlsContentProps> = ({
   
   // Touch event handlers for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault(); // Prevent default behavior
     setIsDragging(true);
     if (e.touches.length > 0) {
       updatePosition(e.touches[0].clientX, e.touches[0].clientY);
@@ -74,6 +81,13 @@ const RobotControlsContent: React.FC<RobotControlsContentProps> = ({
       window.removeEventListener('touchend', handleGlobalMouseUp);
     };
   }, []);
+
+  // Apply position changes
+  const applyChanges = () => {
+    if (onPositionChange) {
+      onPositionChange(position);
+    }
+  };
   
   return (
     <div className="p-4">
@@ -118,6 +132,11 @@ const RobotControlsContent: React.FC<RobotControlsContentProps> = ({
         >
           <Move className="w-3 h-3 text-white" />
         </div>
+        
+        {/* Position coordinates */}
+        <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-white/90 font-mono">
+          X:{Math.round(position.x)}, Y:{Math.round(position.y)}
+        </div>
       </div>
       
       <div className="grid grid-cols-2 gap-2 mt-4">
@@ -126,7 +145,6 @@ const RobotControlsContent: React.FC<RobotControlsContentProps> = ({
           size="sm"
           onClick={() => {
             setPosition(initialPosition);
-            if (onPositionChange) onPositionChange(initialPosition);
           }}
         >
           Reset Position
@@ -134,6 +152,7 @@ const RobotControlsContent: React.FC<RobotControlsContentProps> = ({
         <Button 
           variant="default" 
           size="sm"
+          onClick={applyChanges}
         >
           Apply Changes
         </Button>
