@@ -2,10 +2,7 @@
 import React from "react";
 import Header from "./Header";
 import VideoFeed from "./VideoFeed";
-import TemperatureWidget from "./TemperatureWidget";
-import HumidityWidget from "./HumidityWidget";
-import MushroomHealthWidget from "./MushroomHealthWidget";
-import BatteryWidget from "./BatteryWidget";
+import ConsolidatedMetricsWidget from "./ConsolidatedMetricsWidget";
 import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -69,8 +66,19 @@ const Dashboard: React.FC = () => {
     setIsCollapsed(!isCollapsed);
   };
 
+  // Metrics data - would come from API in real app
+  const metricsData = {
+    temperature: 28.5, // in Celsius
+    humidity: 82, // in percentage
+    batteryPercentage: 78,
+    isCharging: true,
+    lightingLevel: 65, // in percentage
+    mushroomHealth: "healthy" as const,
+    lastUpdated: "2 min ago"
+  };
+
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-black">
+    <div className="relative w-full h-screen overflow-hidden bg-background">
       {/* Video Feed */}
       <VideoFeed />
       
@@ -94,18 +102,17 @@ const Dashboard: React.FC = () => {
         className={`fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4 transition-transform duration-300 
           ${isMobile && isCollapsed ? "translate-x-full" : "translate-x-0"}`}
       >
-        <TemperatureWidget temperature={28.5} trend="stable" />
-        <HumidityWidget humidity={82} />
-        <MushroomHealthWidget status="healthy" lastUpdated="10 min ago" />
-        <BatteryWidget percentage={78} isCharging={true} />
+        <ConsolidatedMetricsWidget {...metricsData} />
         <ActivityLogWidget logs={mockActivityLogs} />
         <MiniGraph data={mockGraphData} />
       </div>
       
-      {/* Left Widgets (Desktop Only) - Removed duplicated ActivityLogWidget */}
+      {/* Left Widgets (Desktop Only) */}
       {!isMobile && (
         <div className="fixed top-20 left-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4">
-          <MushroomHealthWidget status="healthy" lastUpdated="10 min ago" />
+          <div className="hidden">
+            {/* This is left empty intentionally as we consolidated the widgets */}
+          </div>
         </div>
       )}
     </div>
