@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChartLineUp } from 'lucide-react';
+import { LineChart as LineChartIcon } from 'lucide-react';
 import TelemetryWidget from "./TelemetryWidget";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -18,7 +18,7 @@ const MiniGraph: React.FC<MiniGraphProps> = ({ data }) => {
   return (
     <TelemetryWidget
       title="24h Metrics"
-      icon={<ChartLineUp size={18} />}
+      icon={<LineChartIcon size={18} />}
       className="min-h-[250px]"
     >
       <div className="h-[180px] w-full">

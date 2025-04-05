@@ -12,11 +12,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
-  { id: "1", message: "Fan started", timestamp: "2 min ago", type: "info" },
-  { id: "2", message: "Door opened", timestamp: "15 min ago", type: "info" },
-  { id: "3", message: "Humidity alert", timestamp: "1 hour ago", type: "warning" },
-  { id: "4", message: "New growth detected", timestamp: "2 hours ago", type: "info" },
-  { id: "5", message: "Temperature low", timestamp: "3 hours ago", type: "warning" },
+  { id: "1", message: "Fan started", timestamp: "2 min ago", type: "info" as const },
+  { id: "2", message: "Door opened", timestamp: "15 min ago", type: "info" as const },
+  { id: "3", message: "Humidity alert", timestamp: "1 hour ago", type: "warning" as const },
+  { id: "4", message: "New growth detected", timestamp: "2 hours ago", type: "info" as const },
+  { id: "5", message: "Temperature low", timestamp: "3 hours ago", type: "warning" as const },
 ];
 
 const mockGraphData = [
