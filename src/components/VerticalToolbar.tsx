@@ -5,12 +5,15 @@ import {
   GanttChart, 
   Settings, 
   LineChart,
-  Camera
+  Move,
+  Moon,
+  Sun
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { useTheme } from "@/hooks/use-theme";
 
 export interface WidgetToggleState {
   metrics: boolean;
@@ -25,14 +28,17 @@ interface VerticalToolbarProps {
   setWidgetToggles: React.Dispatch<React.SetStateAction<WidgetToggleState>>;
   onToggleCameraView: () => void;
   isOverheadCamera: boolean;
+  onOpenRobotControls: () => void;
 }
 
 const VerticalToolbar: React.FC<VerticalToolbarProps> = ({ 
   widgetToggles, 
   setWidgetToggles,
   onToggleCameraView,
-  isOverheadCamera
+  isOverheadCamera,
+  onOpenRobotControls
 }) => {
+  const { theme, setTheme } = useTheme();
   
   const toggleWidget = (key: keyof WidgetToggleState) => {
     // Skip toggling minimap as it's now permanently displayed
@@ -55,11 +61,12 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
     });
   };
 
-  const handleToggleCameraView = () => {
-    onToggleCameraView();
-    toast.success(isOverheadCamera ? "Switched to headmounted camera" : "Switched to overhead camera", {
-      description: isOverheadCamera ? "Viewing from camera perspective" : "Viewing from top down perspective",
-      icon: <Camera size={18} />
+  const toggleThemeMode = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    toast.success(`${newTheme === 'dark' ? 'Dark' : 'Light'} mode activated`, {
+      description: `Interface switched to ${newTheme} mode`,
+      icon: newTheme === 'dark' ? <Moon size={18} /> : <Sun size={18} />
     });
   };
 
@@ -117,23 +124,33 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
             </React.Fragment>
           ))}
 
-          {/* Camera Toggle */}
+          {/* Camera Position Control Button */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex flex-col items-center gap-1 px-2 py-3">
-                <Camera size={18} className="mb-1" />
-                <Switch 
-                  checked={!isOverheadCamera} 
-                  onCheckedChange={handleToggleCameraView} 
-                  className="data-[state=checked]:bg-blue-500"
-                />
-                <span className="text-[10px] text-center mt-1 font-medium">
-                  {isOverheadCamera ? "Overhead" : "Head Mount"}
-                </span>
-              </div>
+              <button
+                onClick={onOpenRobotControls}
+                className="w-10 h-10 rounded-md flex items-center justify-center transition-colors text-foreground/70 hover:text-foreground hover:bg-primary/20"
+              >
+                <Move size={18} />
+              </button>
             </TooltipTrigger>
             <TooltipContent side="right">
-              <p>Toggle between overhead and head-mounted camera</p>
+              <p>Camera Position Controls</p>
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Theme Toggle */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggleThemeMode}
+                className="w-10 h-10 rounded-md flex items-center justify-center transition-colors text-foreground/70 hover:text-foreground hover:bg-primary/20"
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <p>{theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}</p>
             </TooltipContent>
           </Tooltip>
         </div>

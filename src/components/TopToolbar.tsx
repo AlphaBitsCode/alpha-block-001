@@ -3,11 +3,9 @@ import React from "react";
 import { 
   Droplets, 
   Sun,
-  Moon,
-  Move
+  Camera
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useTheme } from "@/hooks/use-theme";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 
@@ -16,8 +14,9 @@ interface TopToolbarProps {
   toggleHumidifier: () => void;
   isLightOn: boolean;
   toggleLight: () => void;
-  onOpenRobotControls: () => void;
-  isRobotControlsOpen?: boolean;
+  isOverheadCamera: boolean;
+  toggleCameraView: () => void;
+  isMobile?: boolean;
 }
 
 const TopToolbar: React.FC<TopToolbarProps> = ({ 
@@ -25,11 +24,10 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
   toggleHumidifier,
   isLightOn,
   toggleLight,
-  onOpenRobotControls,
-  isRobotControlsOpen = false
+  isOverheadCamera,
+  toggleCameraView,
+  isMobile = false
 }) => {
-  const { theme, setTheme } = useTheme();
-  
   const handleToggleHumidifier = () => {
     toggleHumidifier();
     toast.success(isHumidifierOn ? "Humidifier turned off" : "Humidifier turned on", {
@@ -46,19 +44,18 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
     });
   };
 
-  const toggleThemeMode = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    toast.success(`${newTheme === 'dark' ? 'Dark' : 'Light'} mode activated`, {
-      description: `Interface switched to ${newTheme} mode`,
-      icon: newTheme === 'dark' ? <Moon size={18} /> : <Sun size={18} />
+  const handleToggleCameraView = () => {
+    toggleCameraView();
+    toast.success(isOverheadCamera ? "Switched to headmounted camera" : "Switched to overhead camera", {
+      description: isOverheadCamera ? "Viewing from camera perspective" : "Viewing from top down perspective",
+      icon: <Camera size={18} />
     });
   };
 
   return (
     <TooltipProvider delayDuration={300}>
       <div className="fixed top-[76px] left-1/2 transform -translate-x-1/2 z-50">
-        <div className="glassmorphism flex items-center px-4 py-3 rounded-full gap-4 dark:bg-black/80 light:bg-white/90 shadow-lg">
+        <div className={`glassmorphism flex items-center px-4 py-3 rounded-full gap-3 md:gap-4 dark:bg-black/80 light:bg-white/90 shadow-lg ${isMobile ? 'max-w-[95vw]' : ''}`}>
           {/* Humidifier Switch */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -101,31 +98,26 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
             </TooltipContent>
           </Tooltip>
 
-          {/* Robot Controls Button */}
+          {/* Camera Toggle */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 cursor-pointer" onClick={onOpenRobotControls}>
-                <Move size={18} className={isRobotControlsOpen ? "text-primary" : "text-foreground/60"} />
-                <span className="text-xs font-medium">Camera Position</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Robot Camera Controls</p>
-            </TooltipContent>
-          </Tooltip>
-
-          {/* Theme Toggle */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-2 cursor-pointer" onClick={toggleThemeMode}>
-                {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
+              <div className="flex items-center gap-2">
+                <Camera
+                  size={18}
+                  className={!isOverheadCamera ? "text-blue-400" : "text-foreground/60"}
+                />
+                <Switch 
+                  checked={!isOverheadCamera} 
+                  onCheckedChange={handleToggleCameraView} 
+                  className="data-[state=checked]:bg-blue-500"
+                />
                 <span className="text-xs font-medium">
-                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                  {isOverheadCamera ? "Overhead" : "Head Mount"}
                 </span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}</p>
+              <p>Toggle between overhead and head-mounted camera</p>
             </TooltipContent>
           </Tooltip>
         </div>

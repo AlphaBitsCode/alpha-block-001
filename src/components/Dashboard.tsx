@@ -98,9 +98,9 @@ const Dashboard: React.FC = () => {
   const [cameraPosition, setCameraPosition] = useState<Position>({ x: 50, y: 50 });
   const [isOverheadCamera, setIsOverheadCamera] = useState(true);
 
-  // Widget visibility state - only show metrics by default
+  // Widget visibility state - hide metrics by default now
   const [widgetToggles, setWidgetToggles] = useState<WidgetToggleState>({
-    metrics: true,
+    metrics: false,
     tasks: false,
     activity: false,
     graph: false,
@@ -192,22 +192,23 @@ const Dashboard: React.FC = () => {
         toggleHumidifier={toggleHumidifier}
         isLightOn={isLightOn}
         toggleLight={toggleLight}
-        onOpenRobotControls={handleOpenRobotControls}
-        isRobotControlsOpen={showRobotControls}
+        isOverheadCamera={isOverheadCamera}
+        toggleCameraView={toggleCameraView}
+        isMobile={isMobile}
       />
       
       {/* User Name Prompt */}
       <UserNamePrompt />
       
-      {/* Support Button */}
-      <div className="fixed bottom-4 right-4 z-50">
+      {/* Support Button - Now at the bottom left */}
+      <div className="fixed bottom-4 left-4 z-50">
         <Button 
           onClick={handleOpenSupportDialog} 
-          className="rounded-full bg-primary/90 hover:bg-primary shadow-lg flex items-center gap-2"
+          className="rounded-full bg-primary/90 hover:bg-primary shadow-lg w-10 h-10 p-0"
           size="sm"
+          aria-label="Support"
         >
-          <HelpCircle size={16} />
-          Support
+          <HelpCircle size={20} />
         </Button>
       </div>
       
@@ -319,14 +320,17 @@ const Dashboard: React.FC = () => {
         setWidgetToggles={setWidgetToggles}
         onToggleCameraView={toggleCameraView}
         isOverheadCamera={isOverheadCamera}
+        onOpenRobotControls={handleOpenRobotControls}
       />
       
-      {/* HUD-style Metrics Overlay */}
-      <MetricsOverlay 
-        temperature={metricsData.temperature}
-        humidity={metricsData.humidity}
-        historyData={mockGraphData}
-      />
+      {/* Move the MetricsOverlay to middle right of the screen */}
+      <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-30">
+        <MetricsOverlay 
+          temperature={metricsData.temperature}
+          humidity={metricsData.humidity}
+          historyData={mockGraphData}
+        />
+      </div>
       
       {/* Draggable Widgets */}
       {!isMobile && (

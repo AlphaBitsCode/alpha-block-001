@@ -27,7 +27,7 @@ const MetricsOverlay: React.FC<MetricsOverlayProps> = ({
   const humidityColor = isHumidityOptimal ? "text-green-400" : humidity > 95 ? "text-blue-400" : "text-yellow-400";
 
   return (
-    <div className="fixed bottom-4 right-4 z-30 flex items-end space-x-4">
+    <div className="flex items-end space-x-4">
       {/* Temperature HUD */}
       <div className="flex flex-col items-center">
         <div className="w-20 h-36 relative mb-1">
