@@ -156,7 +156,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
   return (
     <TooltipProvider delayDuration={300}>
       <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50">
-        <div className="glassmorphism flex flex-col items-center p-2 rounded-lg gap-2">
+        <div className="glassmorphism bg-black/60 flex flex-col items-center p-2 rounded-lg gap-2">
           {/* Widget toggles */}
           {widgets.map((button, index) => (
             <React.Fragment key={button.id}>

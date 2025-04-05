@@ -97,15 +97,15 @@
 
 @layer utilities {
   .glassmorphism {
-    @apply bg-black/30 backdrop-blur-md border border-white/10 shadow-lg;
+    @apply bg-black/50 backdrop-blur-md border border-white/10 shadow-lg;
   }
   
   .light .glassmorphism {
-    @apply bg-white/70 backdrop-blur-md border border-black/20 shadow-lg;
+    @apply bg-black/40 backdrop-blur-md border border-black/20 shadow-lg;
   }
   
   .dark .glassmorphism {
-    @apply bg-black/50 backdrop-blur-md border border-white/10 shadow-lg;
+    @apply bg-black/60 backdrop-blur-md border border-white/10 shadow-lg;
   }
   
   .glassmorphism-light {
@@ -130,6 +130,11 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background-image: url('https://lakeview.secondbrains.tech/cam/office_4.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
 }
 
 /* Improve text contrast in light mode */

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import VideoFeed from "./VideoFeed";
@@ -75,7 +76,7 @@ const Dashboard: React.FC = () => {
   const [showRobotControls, setShowRobotControls] = useState(false);
   const [cameraPosition, setCameraPosition] = useState<Position>({ x: 50, y: 50 });
 
-  // Widget visibility state - updated to only show metrics by default
+  // Widget visibility state - only show metrics by default
   const [widgetToggles, setWidgetToggles] = useState<WidgetToggleState>({
     metrics: true,
     tasks: false,
@@ -86,8 +87,8 @@ const Dashboard: React.FC = () => {
 
   // Draggable hooks for each widget
   const metricsWidget = useDraggable({ 
-    initialPosition: { x: 20, y: 80 },
-    bounds: { top: 70, left: 10 }
+    initialPosition: { x: window.innerWidth - 330, y: 80 },
+    bounds: { top: 70, right: window.innerWidth - 10 }
   });
   
   const tasksWidget = useDraggable({ 
@@ -105,7 +106,7 @@ const Dashboard: React.FC = () => {
     bounds: { top: 70, right: window.innerWidth - 10 }
   });
   
-  // New draggable hook for camera position widget
+  // New draggable hook for camera position widget - now positioned at bottom left
   const cameraPositionWidget = useDraggable({
     initialPosition: { x: 20, y: window.innerHeight - 220 },
     bounds: { bottom: window.innerHeight - 20, left: 10 }
@@ -146,7 +147,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
-      {/* Video Feed */}
+      {/* Video Feed with new background */}
       <VideoFeed />
       
       {/* Header */}
@@ -157,10 +158,7 @@ const Dashboard: React.FC = () => {
       {/* User Name Prompt */}
       <UserNamePrompt />
       
-      {/* Toaster for notifications */}
-      <Toaster position="top-center" />
-      
-      {/* Fixed MiniMap in bottom-left corner */}
+      {/* Fixed MiniMap in bottom-left corner with updated background */}
       <div className="fixed bottom-4 left-4 z-40" ref={cameraPositionWidget.dragRef} 
            style={{ 
              position: 'absolute', 
@@ -169,24 +167,34 @@ const Dashboard: React.FC = () => {
            }}
            onMouseDown={cameraPositionWidget.onMouseDown}>
         <div className="glassmorphism p-1 rounded-md border border-white/10 shadow-lg 
-                      dark:bg-black/40 dark:border-white/10 
-                      light:bg-white/70 light:border-white/20">
+                      dark:bg-black/60 dark:border-white/10 
+                      light:bg-black/40 light:border-white/20">
           <div className="flex flex-row gap-2">
-            {/* Main minimap */}
-            <div className="relative w-32 h-32 bg-black/20 dark:bg-black/40 light:bg-white/30 rounded overflow-hidden">
+            {/* Main minimap with new background */}
+            <div className="relative w-32 h-32 bg-black/30 dark:bg-black/60 light:bg-black/40 rounded overflow-hidden">
+              {/* Minimap background image */}
+              <div className="absolute inset-0 z-0">
+                <img 
+                  src="https://lakeview.secondbrains.tech/cam/office_4.jpg" 
+                  alt="Map background"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30"></div>
+              </div>
+              
               {/* Grid lines */}
-              <div className="absolute inset-0 grid grid-cols-4 gap-0 pointer-events-none">
+              <div className="absolute inset-0 grid grid-cols-4 gap-0 pointer-events-none z-10">
                 {Array(3).fill(0).map((_, i) => (
                   <div 
                     key={`v-${i}`} 
-                    className="border-r dark:border-white/10 light:border-black/10 h-full" 
+                    className="border-r dark:border-white/10 light:border-white/20 h-full" 
                     style={{left: `${(i + 1) * 25}%`}} 
                   />
                 ))}
                 {Array(3).fill(0).map((_, i) => (
                   <div 
                     key={`h-${i}`} 
-                    className="border-b dark:border-white/10 light:border-black/10 w-full" 
+                    className="border-b dark:border-white/10 light:border-white/20 w-full" 
                     style={{top: `${(i + 1) * 25}%`}} 
                   />
                 ))}
@@ -194,7 +202,7 @@ const Dashboard: React.FC = () => {
               
               {/* Camera position indicator */}
               <div 
-                className="absolute w-3 h-3 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_5px_rgba(59,130,246,0.7)]"
+                className="absolute w-3 h-3 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_5px_rgba(59,130,246,0.7)] z-20"
                 style={{ 
                   left: `${cameraPosition.x}%`, 
                   top: `${cameraPosition.y}%`,
@@ -203,7 +211,7 @@ const Dashboard: React.FC = () => {
               
               {/* View cone / Direction indicator */}
               <div 
-                className="absolute w-12 h-12 bg-blue-500/20 rounded-full transform -translate-x-1/2 -translate-y-1/2"
+                className="absolute w-12 h-12 bg-blue-500/20 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-10"
                 style={{ 
                   left: `${cameraPosition.x}%`, 
                   top: `${cameraPosition.y}%`,
@@ -211,21 +219,21 @@ const Dashboard: React.FC = () => {
               />
               
               {/* Position coordinates display */}
-              <div className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 rounded text-xs text-white/90 font-mono">
+              <div className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 rounded text-xs text-white/90 font-mono z-20">
                 X:{Math.round(cameraPosition.x)}, Y:{Math.round(cameraPosition.y)}
               </div>
               
-              <div className="absolute inset-0 border dark:border-white/20 light:border-black/10 rounded pointer-events-none" />
+              <div className="absolute inset-0 border dark:border-white/20 light:border-white/20 rounded pointer-events-none z-10" />
             </div>
             
-            {/* Camera preview */}
+            {/* Camera preview with refreshing image */}
             <div className="relative w-32 h-32 overflow-hidden rounded-md">
               <img 
                 src={`https://lakeview.secondbrains.tech/cam/office_3.jpg?t=${Date.now()}`} 
                 alt="Camera Feed"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 border dark:border-white/10 light:border-black/10 rounded-md pointer-events-none" />
+              <div className="absolute inset-0 border dark:border-white/10 light:border-white/20 rounded-md pointer-events-none" />
               <div className="absolute bottom-1 left-1 right-1 text-center bg-black/50 text-xs text-white/90 px-1 py-0.5 rounded">
                 Live Feed
               </div>
@@ -305,7 +313,7 @@ const Dashboard: React.FC = () => {
             </TelemetryWidget>
           )}
           
-          {/* Graph Widget */}
+          {/* Graph Widget - Improved height */}
           {widgetToggles.graph && (
             <TelemetryWidget 
               title="Monitoring History" 
@@ -314,6 +322,7 @@ const Dashboard: React.FC = () => {
               onMouseDown={graphWidget.onMouseDown}
               ref={graphWidget.dragRef}
               widthClass="w-[500px]"
+              heightClass="h-[300px]"
             >
               <MiniGraph data={mockGraphData} />
             </TelemetryWidget>
@@ -321,13 +330,29 @@ const Dashboard: React.FC = () => {
         </>
       )}
       
-      {/* Mobile Widgets (simplified) */}
+      {/* Mobile Widgets (improved for better visibility) */}
       {isMobile && (
-        <div className="fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4">
-          {widgetToggles.metrics && <ConsolidatedMetricsWidget {...metricsData} />}
-          {widgetToggles.tasks && <CareTaskWidget />}
-          {widgetToggles.activity && <ActivityLogWidget logs={mockActivityLogs} />}
-          {widgetToggles.graph && <MiniGraph data={mockGraphData} />}
+        <div className="fixed top-20 right-4 bottom-4 z-40 w-full max-w-xs flex flex-col space-y-4 overflow-y-auto pb-20">
+          {widgetToggles.metrics && (
+            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4">
+              <ConsolidatedMetricsWidget {...metricsData} />
+            </div>
+          )}
+          {widgetToggles.tasks && (
+            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4">
+              <CareTaskWidget />
+            </div>
+          )}
+          {widgetToggles.activity && (
+            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4">
+              <ActivityLogWidget logs={mockActivityLogs} />
+            </div>
+          )}
+          {widgetToggles.graph && (
+            <div className="bg-black/70 backdrop-blur-md border border-white/10 shadow-lg rounded-lg p-4 h-[300px]">
+              <MiniGraph data={mockGraphData} />
+            </div>
+          )}
         </div>
       )}
     </div>

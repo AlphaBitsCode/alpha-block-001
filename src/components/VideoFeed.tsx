@@ -100,7 +100,7 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ streamUrl }) => {
       <div 
         className="absolute inset-0 bg-gradient-to-b from-gray-800 to-gray-900 -z-10"
         style={{
-          backgroundImage: "url('/lovable-uploads/0c9d9da8-7161-4586-9d26-7e5198d297ad.png')",
+          backgroundImage: "url('https://lakeview.secondbrains.tech/cam/office_4.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center"
         }}
