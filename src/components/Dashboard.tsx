@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Header from "./Header";
 import VideoFeed from "./VideoFeed";
 import ConsolidatedMetricsWidget from "./ConsolidatedMetricsWidget";
@@ -61,7 +61,15 @@ const mockGraphData = [
 
 const Dashboard: React.FC = () => {
   const isMobile = useIsMobile();
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Widget positions
+  const [widgetPositions, setWidgetPositions] = useState({
+    metrics: { x: isMobile ? 10 : window.innerWidth - 400, y: 80 },
+    care: { x: isMobile ? 10 : window.innerWidth - 400, y: 240 },
+    activity: { x: isMobile ? 10 : window.innerWidth - 400, y: 500 },
+    graph: { x: isMobile ? 10 : window.innerWidth - 400, y: 700 }
+  });
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -98,23 +106,25 @@ const Dashboard: React.FC = () => {
         </button>
       )}
       
-      {/* Telemetry Widgets */}
-      <div 
-        className={`fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4 transition-transform duration-300 
-          ${isMobile && isCollapsed ? "translate-x-full" : "translate-x-0"}`}
-      >
-        <ConsolidatedMetricsWidget {...metricsData} />
-        <CareTaskWidget />
-        <ActivityLogWidget logs={mockActivityLogs} />
-        <MiniGraph data={mockGraphData} />
-      </div>
-      
-      {/* Left Widgets (Desktop Only) */}
+      {/* Widgets */}
       {!isMobile && (
-        <div className="fixed top-20 left-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4">
-          <div className="hidden">
-            {/* This is left empty intentionally as we consolidated the widgets */}
-          </div>
+        <>
+          <CareTaskWidget />
+          <ConsolidatedMetricsWidget {...metricsData} />
+          <ActivityLogWidget logs={mockActivityLogs} />
+          <MiniGraph data={mockGraphData} />
+        </>
+      )}
+      
+      {/* Mobile Widgets */}
+      {isMobile && (
+        <div 
+          className={`fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4 transition-transform duration-300 ${isCollapsed ? "translate-x-full" : "translate-x-0"}`}
+        >
+          <ConsolidatedMetricsWidget {...metricsData} />
+          <CareTaskWidget />
+          <ActivityLogWidget logs={mockActivityLogs} />
+          <MiniGraph data={mockGraphData} />
         </div>
       )}
     </div>

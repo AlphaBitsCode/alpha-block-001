@@ -7,11 +7,16 @@ import { Moon, Sun } from "lucide-react";
 const ThemeToggle: React.FC = () => {
   const { theme, setTheme } = useTheme();
   
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+  };
+  
   return (
     <Button
       variant="outline"
       size="sm"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={toggleTheme}
       className="flex gap-2"
     >
       {theme === "dark" ? (
