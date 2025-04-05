@@ -1,25 +1,21 @@
+
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import VideoFeed from "./VideoFeed";
-import ConsolidatedMetricsWidget from "./ConsolidatedMetricsWidget";
-import ActivityLogWidget from "./ActivityLogWidget";
-import MiniGraph from "./MiniGraph";
-import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Fan, Droplets, Check, ThermometerIcon, ListOrdered, GanttChart, Settings, LineChart, HelpCircle, Map } from "lucide-react";
-import MetricsOverlay from "./MetricsOverlay";
-import TelemetryWidget from "./TelemetryWidget";
-import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
-import TopToolbar from "./TopToolbar";
+import { Droplets, Check, Fan } from "lucide-react";
 import { useDraggable, Position } from "@/hooks/use-draggable";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Toaster } from "sonner";
 import UserNamePrompt from "./UserNamePrompt";
-import RobotControlsContent from "./RobotControlsContent";
-import { Button } from "@/components/ui/button";
 import SupportDialog from "./SupportDialog";
-import HarvestCountdown from "./HarvestCountdown";
+import VerticalToolbar from "./VerticalToolbar";
+import TopToolbar from "./TopToolbar";
+import DraggableWidgets from "./DraggableWidgets";
+import RobotControlDialog from "./RobotControlDialog";
+import SupportButton from "./SupportButton";
+import MetricsOverlayContainer from "./MetricsOverlayContainer";
+import MiniMapWidget from "./MiniMapWidget";
+import { generateMockGraphData } from "../utils/mockDataGenerator";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -49,7 +45,7 @@ const mockActivityLogs = [
     message: "Temperature adjustment initiated", 
     timestamp: "15 min ago", 
     type: "info" as const,
-    icon: <ThermometerIcon size={16} className="text-blue-400" />
+    icon: <Fan size={16} className="text-blue-400" />
   },
   { 
     id: "5", 
@@ -59,32 +55,6 @@ const mockActivityLogs = [
     icon: <Check size={16} className="text-green-400" />
   },
 ];
-
-// Generate 24-hour mock graph data
-const generateMockGraphData = () => {
-  const result = [];
-  const now = new Date();
-  
-  for (let i = 24; i >= 0; i--) {
-    const time = new Date(now.getTime() - i * 60 * 60 * 1000);
-    const hours = time.getHours().toString().padStart(2, '0');
-    const minutes = time.getMinutes().toString().padStart(2, '0');
-    const timeString = `${hours}:${minutes}`;
-    
-    // Create variations based on time of day
-    const tempBase = 28;
-    const humidityBase = 82;
-    const hourFactor = Math.sin((24-i) * Math.PI / 12); // Day/night cycle
-    
-    result.push({
-      time: timeString,
-      temperature: tempBase + hourFactor * 2 + Math.random() * 1.5,
-      humidity: humidityBase - hourFactor * 4 + Math.random() * 3
-    });
-  }
-  
-  return result;
-};
 
 const mockGraphData = generateMockGraphData();
 
@@ -98,7 +68,7 @@ const Dashboard: React.FC = () => {
   const [isOverheadCamera, setIsOverheadCamera] = useState(true);
 
   // Widget visibility state - hide metrics by default
-  const [widgetToggles, setWidgetToggles] = useState<WidgetToggleState>({
+  const [widgetToggles, setWidgetToggles] = useState({
     metrics: false,
     tasks: false,
     activity: false,
@@ -106,34 +76,6 @@ const Dashboard: React.FC = () => {
     minimap: true
   });
 
-  // Draggable hooks for each widget
-  const metricsWidget = useDraggable({ 
-    initialPosition: { x: window.innerWidth - 330, y: 80 },
-    bounds: { top: 70, right: window.innerWidth - 10 }
-  });
-  
-  const tasksWidget = useDraggable({ 
-    initialPosition: { x: 20, y: 320 },
-    bounds: { top: 70, left: 10 }
-  });
-  
-  const activityWidget = useDraggable({ 
-    initialPosition: { x: window.innerWidth - 330, y: 80 },
-    bounds: { top: 70, right: window.innerWidth - 10 }
-  });
-  
-  // Updated position for graph widget - middle right
-  const graphWidget = useDraggable({ 
-    initialPosition: { x: window.innerWidth - 520, y: window.innerHeight / 2 - 175 },
-    bounds: { top: 70, right: window.innerWidth - 10 }
-  });
-  
-  // New position for camera position widget - bottom right
-  const cameraPositionWidget = useDraggable({
-    initialPosition: { x: window.innerWidth - 280, y: window.innerHeight - 220 },
-    bounds: { bottom: window.innerHeight - 20, right: window.innerWidth - 10 }
-  });
-  
   const toggleHumidifier = () => {
     setIsHumidifierOn(!isHumidifierOn);
   };
@@ -181,7 +123,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-background">
-      {/* Video Feed with new background */}
+      {/* Video Feed */}
       <VideoFeed isOverheadCamera={isOverheadCamera} />
       
       {/* Header */}
@@ -189,7 +131,7 @@ const Dashboard: React.FC = () => {
         <Header unitId="AB-001" startDate="Apr 1, 2025" cropName="Pink Oyster" />
       </div>
       
-      {/* Top Toolbar with Controls - with improved z-index and drop shadow */}
+      {/* Top Toolbar with Controls */}
       <div className="fixed top-[76px] left-1/2 transform -translate-x-1/2 z-[90] shadow-md">
         <TopToolbar
           isHumidifierOn={isHumidifierOn}
@@ -205,114 +147,32 @@ const Dashboard: React.FC = () => {
       {/* User Name Prompt */}
       <UserNamePrompt />
       
-      {/* Harvest Countdown - moved above temperature/humidity widget with no background */}
-      <div className="fixed left-4 top-1/2 transform -translate-y-[160px] z-30">
-        <HarvestCountdown harvestDate="2025-04-15T00:00:00" />
-      </div>
+      {/* Metrics Overlay and Harvest Countdown */}
+      <MetricsOverlayContainer 
+        temperature={metricsData.temperature}
+        humidity={metricsData.humidity}
+        historyData={mockGraphData}
+        harvestDate="2025-04-15T00:00:00"
+      />
       
-      {/* Support Button - at the bottom left with theme-aware styling */}
-      <div className="fixed bottom-4 left-4 z-50">
-        <Button 
-          onClick={handleOpenSupportDialog} 
-          className="rounded-full shadow-lg w-10 h-10 p-0 bg-primary hover:bg-primary/90 text-primary-foreground dark:bg-primary dark:text-primary-foreground light:bg-primary light:text-primary-foreground"
-          size="sm"
-          aria-label="Support"
-        >
-          <HelpCircle size={20} />
-        </Button>
-      </div>
+      {/* Support Button */}
+      <SupportButton onClick={handleOpenSupportDialog} />
       
-      {/* Fixed MiniMap moved to bottom-right corner - toggle visibility based on widgetToggles.minimap */}
-      {widgetToggles.minimap && (
-        <div className="fixed bottom-4 right-4 z-40" ref={cameraPositionWidget.dragRef} 
-             style={{ 
-               position: 'absolute', 
-               left: `${cameraPositionWidget.position.x}px`, 
-               top: `${cameraPositionWidget.position.y}px`
-             }}
-             onMouseDown={cameraPositionWidget.onMouseDown}>
-          <div className="glassmorphism p-1 rounded-md border border-white/20 shadow-lg 
-                        dark:bg-black/70 dark:border-white/20 
-                        light:bg-white/80 light:border-black/20">
-            <div className="flex flex-row gap-2">
-              {/* Main minimap with new background */}
-              <div className="relative w-32 h-32 bg-black/30 dark:bg-black/60 light:bg-black/40 rounded overflow-hidden">
-                {/* Minimap background image */}
-                <div className="absolute inset-0 z-0">
-                  <img 
-                    src="https://lakeview.secondbrains.tech/cam/office_4.jpg" 
-                    alt="Map background"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/30"></div>
-                </div>
-                
-                {/* Grid lines */}
-                <div className="absolute inset-0 grid grid-cols-4 gap-0 pointer-events-none z-10">
-                  {Array(3).fill(0).map((_, i) => (
-                    <div 
-                      key={`v-${i}`} 
-                      className="border-r dark:border-white/20 light:border-white/30 h-full" 
-                      style={{left: `${(i + 1) * 25}%`}} 
-                    />
-                  ))}
-                  {Array(3).fill(0).map((_, i) => (
-                    <div 
-                      key={`h-${i}`} 
-                      className="border-b dark:border-white/20 light:border-white/30 w-full" 
-                      style={{top: `${(i + 1) * 25}%`}} 
-                    />
-                  ))}
-                </div>
-                
-                {/* Camera position indicator */}
-                <div 
-                  className="absolute w-3 h-3 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_5px_rgba(59,130,246,0.7)] z-20"
-                  style={{ 
-                    left: `${cameraPosition.x}%`, 
-                    top: `${cameraPosition.y}%`,
-                  }}
-                />
-                
-                {/* View cone / Direction indicator */}
-                <div 
-                  className="absolute w-12 h-12 bg-blue-500/20 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-10"
-                  style={{ 
-                    left: `${cameraPosition.x}%`, 
-                    top: `${cameraPosition.y}%`,
-                  }}
-                />
-                
-                {/* Position coordinates display */}
-                <div className="absolute bottom-1 right-1 bg-black/70 px-1.5 py-0.5 rounded text-xs text-white/90 font-mono z-20">
-                  X:{Math.round(cameraPosition.x)}, Y:{Math.round(cameraPosition.y)}
-                </div>
-                
-                <div className="absolute inset-0 border dark:border-white/20 light:border-white/40 rounded pointer-events-none z-10" />
-              </div>
-              
-              {/* Camera preview with refreshing image */}
-              <div className="relative w-32 h-32 overflow-hidden rounded-md">
-                <img 
-                  src={`https://lakeview.secondbrains.tech/cam/office_3.jpg?t=${Math.floor(Date.now() / 30000)}`} 
-                  alt="Camera Feed"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 border dark:border-white/20 light:border-white/30 rounded-md pointer-events-none" />
-                <div className="absolute bottom-1 left-1 right-1 text-center bg-black/70 text-xs text-white/90 px-1 py-0.5 rounded">
-                  Live Feed
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center px-1 py-1">
-              <div className="text-xs text-foreground font-medium">Camera Position</div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* MiniMap Widget */}
+      <MiniMapWidget 
+        cameraPosition={cameraPosition}
+        onPositionChange={handleRobotControlPositionChange}
+        visible={widgetToggles.minimap}
+      />
       
       {/* Robot Controls Dialog/Drawer */}
-      <RobotControlDialog />
+      <RobotControlDialog
+        isMobile={isMobile}
+        open={showRobotControls}
+        onOpenChange={setShowRobotControls}
+        initialPosition={cameraPosition}
+        onPositionChange={handleRobotControlPositionChange}
+      />
       
       {/* Support Dialog */}
       <SupportDialog open={showSupportDialog} onOpenChange={setShowSupportDialog} />
@@ -326,141 +186,16 @@ const Dashboard: React.FC = () => {
         onOpenRobotControls={handleOpenRobotControls}
       />
       
-      {/* Move the MetricsOverlay to middle right of the screen with reduced height */}
-      <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-30">
-        <div className="flex flex-col space-y-4">
-          <MetricsOverlay 
-            temperature={metricsData.temperature}
-            humidity={metricsData.humidity}
-            historyData={mockGraphData}
-            heightClass="h-[80px]" // Reduced height
-          />
-        </div>
-      </div>
-      
       {/* Draggable Widgets */}
-      {!isMobile && (
-        <>
-          {/* Metrics Widget - now hidden by default */}
-          {widgetToggles.metrics && (
-            <TelemetryWidget 
-              title="System Metrics" 
-              icon={<Settings size={18} />}
-              position={metricsWidget.position}
-              onMouseDown={metricsWidget.onMouseDown}
-              ref={metricsWidget.dragRef}
-            >
-              <ConsolidatedMetricsWidget {...metricsData} />
-            </TelemetryWidget>
-          )}
-          
-          {/* Tasks Widget */}
-          {widgetToggles.tasks && (
-            <TelemetryWidget 
-              title="Care Plan" 
-              icon={<GanttChart size={18} />}
-              position={tasksWidget.position}
-              onMouseDown={tasksWidget.onMouseDown}
-              ref={tasksWidget.dragRef}
-            >
-              <CareTaskWidget />
-            </TelemetryWidget>
-          )}
-          
-          {/* Activity Widget */}
-          {widgetToggles.activity && (
-            <TelemetryWidget 
-              title="Activity Log" 
-              icon={<ListOrdered size={18} />}
-              position={activityWidget.position}
-              onMouseDown={activityWidget.onMouseDown}
-              ref={activityWidget.dragRef}
-            >
-              <ActivityLogWidget logs={mockActivityLogs} />
-            </TelemetryWidget>
-          )}
-          
-          {/* Graph Widget - Fixed height, moved to middle right */}
-          {widgetToggles.graph && (
-            <TelemetryWidget 
-              title="Monitoring History" 
-              icon={<LineChart size={18} />}
-              position={graphWidget.position}
-              onMouseDown={graphWidget.onMouseDown}
-              ref={graphWidget.dragRef}
-              widthClass="w-[500px]"
-              heightClass="h-[350px]"
-            >
-              <MiniGraph data={mockGraphData} />
-            </TelemetryWidget>
-          )}
-        </>
-      )}
-      
-      {/* Mobile Widgets (improved contrast for better visibility) */}
-      {isMobile && (
-        <div className="fixed top-20 right-4 bottom-4 z-40 w-full max-w-xs flex flex-col space-y-4 overflow-y-auto pb-20">
-          {widgetToggles.metrics && (
-            <div className="glassmorphism p-4 rounded-lg dark:bg-black/80 light:bg-white/90">
-              <ConsolidatedMetricsWidget {...metricsData} />
-            </div>
-          )}
-          {widgetToggles.tasks && (
-            <div className="glassmorphism p-4 rounded-lg dark:bg-black/80 light:bg-white/90">
-              <CareTaskWidget />
-            </div>
-          )}
-          {widgetToggles.activity && (
-            <div className="glassmorphism p-4 rounded-lg dark:bg-black/80 light:bg-white/90">
-              <ActivityLogWidget logs={mockActivityLogs} />
-            </div>
-          )}
-          {widgetToggles.graph && (
-            <div className="glassmorphism p-4 rounded-lg h-[350px] dark:bg-black/80 light:bg-white/90">
-              <MiniGraph data={mockGraphData} />
-            </div>
-          )}
-        </div>
-      )}
+      <DraggableWidgets
+        isMobile={isMobile}
+        widgetToggles={widgetToggles}
+        metricsData={metricsData}
+        mockActivityLogs={mockActivityLogs}
+        mockGraphData={mockGraphData}
+      />
     </div>
   );
-  
-  // Robot Control Dialog function
-  function RobotControlDialog() {
-    if (isMobile) {
-      return (
-        <Drawer open={showRobotControls} onOpenChange={setShowRobotControls}>
-          <DrawerContent className="bg-black/90 border-t border-white/20 text-white">
-            <DrawerHeader>
-              <DrawerTitle>Camera Position Controls</DrawerTitle>
-            </DrawerHeader>
-            <div className="p-4">
-              <RobotControlsContent 
-                initialPosition={cameraPosition}
-                onPositionChange={handleRobotControlPositionChange}
-              />
-            </div>
-          </DrawerContent>
-        </Drawer>
-      );
-    }
-    
-    return (
-      <Dialog open={showRobotControls} onOpenChange={setShowRobotControls}>
-        <DialogContent className="bg-black/90 border border-white/20 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle>Camera Position Controls</DialogTitle>
-          </DialogHeader>
-          <div>
-            <RobotControlsContent 
-              initialPosition={cameraPosition}
-              onPositionChange={handleRobotControlPositionChange}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  };
 };
 
 export default Dashboard;

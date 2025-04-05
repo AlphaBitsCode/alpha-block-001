@@ -4,9 +4,13 @@ import { Timer } from "lucide-react";
 
 interface HarvestCountdownProps {
   harvestDate: string; // ISO string format
+  minimal?: boolean;
 }
 
-const HarvestCountdown: React.FC<HarvestCountdownProps> = ({ harvestDate }) => {
+const HarvestCountdown: React.FC<HarvestCountdownProps> = ({ 
+  harvestDate,
+  minimal = true
+}) => {
   const [timeRemaining, setTimeRemaining] = useState<{
     days: number;
     hours: number;
@@ -43,7 +47,7 @@ const HarvestCountdown: React.FC<HarvestCountdownProps> = ({ harvestDate }) => {
   }, [harvestDate]);
   
   return (
-    <div className="text-white drop-shadow-lg flex items-center">
+    <div className={`text-white drop-shadow-lg flex items-center ${!minimal ? 'p-2 bg-black/50 rounded-md' : ''}`}>
       <Timer size={16} className="mr-2 text-primary" />
       <span className="text-sm font-medium drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">
         Harvest in: {timeRemaining.days}d {timeRemaining.hours}h {timeRemaining.minutes}m
