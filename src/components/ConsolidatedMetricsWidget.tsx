@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Thermometer, Droplets, Battery, Sun, SunMoon } from "lucide-react";
-import TelemetryWidget from "./TelemetryWidget";
 import { cn } from "@/lib/utils";
 
 interface MetricsWidgetProps {
@@ -51,92 +50,87 @@ const ConsolidatedMetricsWidget: React.FC<MetricsWidgetProps> = ({
   };
 
   return (
-    <TelemetryWidget 
-      title="Realtime Metrics" 
-      icon={<SunMoon size={18} className="text-blue-400" />}
-    >
-      <div className="space-y-4">
-        {/* Temperature */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Thermometer size={16} className={cn(
-              isTempOptimal ? "text-green-400" : 
-              isTempTooHigh ? "text-red-400" : 
-              "text-yellow-400"
-            )} />
-            <span className="text-white/80">Temperature</span>
-          </div>
-          <div className="text-white font-medium">
-            {temperature}°C
-            <span className="ml-2 text-xs">
-              {isTempOptimal && <span className="text-green-400">Optimal</span>}
-              {isTempTooLow && <span className="text-yellow-400">Too Low</span>}
-              {isTempTooHigh && <span className="text-red-400">Too High</span>}
-            </span>
-          </div>
+    <div className="space-y-4">
+      {/* Temperature */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Thermometer size={16} className={cn(
+            isTempOptimal ? "text-green-400" : 
+            isTempTooHigh ? "text-red-400" : 
+            "text-yellow-400"
+          )} />
+          <span className="text-white/80">Temperature</span>
         </div>
-        
-        {/* Humidity */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Droplets size={16} className={cn(
-              isHumidityOptimal ? "text-green-400" : 
-              isHumidityTooLow ? "text-yellow-400" : 
-              "text-blue-400"
-            )} />
-            <span className="text-white/80">Humidity</span>
-          </div>
-          <div className="text-white font-medium">
-            {humidity}%
-            <span className="ml-2 text-xs">
-              {isHumidityOptimal && <span className="text-green-400">Optimal</span>}
-              {isHumidityTooLow && <span className="text-yellow-400">Too Low</span>}
-              {isHumidityTooHigh && <span className="text-blue-400">Too High</span>}
-            </span>
-          </div>
-        </div>
-        
-        {/* Battery Status */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Battery size={16} className={getBatteryColor()} />
-            <span className="text-white/80">Battery Status</span>
-          </div>
-          <div className="text-white font-medium">
-            {batteryPercentage}%
-            <span className="ml-2 text-xs">
-              {isCharging ? <span className="text-green-400">Charging</span> : ""}
-            </span>
-          </div>
-        </div>
-        
-        {/* Lighting Level */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sun size={16} className="text-yellow-400" />
-            <span className="text-white/80">Lighting</span>
-          </div>
-          <div className="text-white font-medium">
-            {lightingLevel}%
-          </div>
-        </div>
-        
-        {/* Mushroom Health */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full ${getHealthColor()}`}></span>
-            <span className="text-white/80">Pink Oyster Health</span>
-          </div>
-          <div className={`text-white font-medium ${getHealthColor()}`}>
-            {mushroomHealth.charAt(0).toUpperCase() + mushroomHealth.slice(1)}
-          </div>
-        </div>
-        
-        <div className="text-xs text-white/50 text-right pt-2">
-          Last updated: {lastUpdated}
+        <div className="text-white font-medium">
+          {temperature}°C
+          <span className="ml-2 text-xs">
+            {isTempOptimal && <span className="text-green-400">Optimal</span>}
+            {isTempTooLow && <span className="text-yellow-400">Too Low</span>}
+            {isTempTooHigh && <span className="text-red-400">Too High</span>}
+          </span>
         </div>
       </div>
-    </TelemetryWidget>
+      
+      {/* Humidity */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Droplets size={16} className={cn(
+            isHumidityOptimal ? "text-green-400" : 
+            isHumidityTooLow ? "text-yellow-400" : 
+            "text-blue-400"
+          )} />
+          <span className="text-white/80">Humidity</span>
+        </div>
+        <div className="text-white font-medium">
+          {humidity}%
+          <span className="ml-2 text-xs">
+            {isHumidityOptimal && <span className="text-green-400">Optimal</span>}
+            {isHumidityTooLow && <span className="text-yellow-400">Too Low</span>}
+            {isHumidityTooHigh && <span className="text-blue-400">Too High</span>}
+          </span>
+        </div>
+      </div>
+      
+      {/* Battery Status */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Battery size={16} className={getBatteryColor()} />
+          <span className="text-white/80">Battery Status</span>
+        </div>
+        <div className="text-white font-medium">
+          {batteryPercentage}%
+          <span className="ml-2 text-xs">
+            {isCharging ? <span className="text-green-400">Charging</span> : ""}
+          </span>
+        </div>
+      </div>
+      
+      {/* Lighting Level */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Sun size={16} className="text-yellow-400" />
+          <span className="text-white/80">Lighting</span>
+        </div>
+        <div className="text-white font-medium">
+          {lightingLevel}%
+        </div>
+      </div>
+      
+      {/* Mushroom Health */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${getHealthColor()}`}></span>
+          <span className="text-white/80">Pink Oyster Health</span>
+        </div>
+        <div className={`text-white font-medium ${getHealthColor()}`}>
+          {mushroomHealth.charAt(0).toUpperCase() + mushroomHealth.slice(1)}
+        </div>
+      </div>
+      
+      <div className="text-xs text-white/50 text-right pt-2">
+        Last updated: {lastUpdated}
+      </div>
+    </div>
   );
 };
 

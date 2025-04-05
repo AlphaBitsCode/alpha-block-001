@@ -56,6 +56,12 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ streamUrl }) => {
 
   return (
     <div className="relative w-full h-full overflow-hidden">
+      {/* Vignette effect overlay */}
+      <div className="absolute inset-0 z-10 pointer-events-none" style={{
+        boxShadow: "inset 0 0 150px 60px rgba(0, 0, 0, 0.8)",
+        background: "radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.8) 90%)"
+      }}></div>
+      
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black">
           <div className="animate-pulse text-white text-xl">Loading feed...</div>
@@ -82,6 +88,13 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ streamUrl }) => {
         className="absolute inset-0 w-full h-full object-cover"
         style={{ display: isLoading || error ? 'none' : 'block' }}
       />
+      
+      {/* Center focus square overlay */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="w-[60vh] h-[60vh] border border-white/20 rounded-md"></div>
+        </div>
+      </div>
       
       {/* Fallback background in case image fails to load */}
       <div 

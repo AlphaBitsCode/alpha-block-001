@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, forwardRef } from "react";
 import { Minimize2, Maximize2 } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
 import { Position } from "@/hooks/use-draggable";
@@ -9,14 +9,14 @@ interface TelemetryWidgetProps {
   icon: ReactNode;
   children: ReactNode;
   className?: string;
-  position: Position;
+  position?: Position; // Make position optional
   isCollapsed?: boolean;
   onMinimizeClick?: () => void;
   onMouseDown?: (e: React.MouseEvent) => void;
   widthClass?: string;
 }
 
-const TelemetryWidget: React.FC<TelemetryWidgetProps> = ({
+const TelemetryWidget = forwardRef<HTMLDivElement, TelemetryWidgetProps>(({
   title,
   icon,
   children,
@@ -26,16 +26,20 @@ const TelemetryWidget: React.FC<TelemetryWidgetProps> = ({
   onMinimizeClick,
   onMouseDown,
   widthClass = "w-80"
-}) => {
+}, ref) => {
   if (isCollapsed) return null;
+  
+  // Set default position if undefined
+  const positionStyle = position ? {
+    left: `${position.x}px`,
+    top: `${position.y}px`
+  } : {};
   
   return (
     <div 
       className={`glassmorphism absolute rounded-lg overflow-hidden animate-fade-in shadow-lg border border-white/10 ${widthClass} ${className}`}
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`
-      }}
+      style={positionStyle}
+      ref={ref}
     >
       <div 
         className="flex items-center justify-between p-3 border-b border-white/10 cursor-move"
@@ -57,6 +61,8 @@ const TelemetryWidget: React.FC<TelemetryWidgetProps> = ({
       </div>
     </div>
   );
-};
+});
+
+TelemetryWidget.displayName = "TelemetryWidget";
 
 export default TelemetryWidget;
