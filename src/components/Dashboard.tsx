@@ -19,6 +19,7 @@ import MiniMap from "./MiniMap";
 import UserNamePrompt from "./UserNamePrompt";
 import NavigationMenuComponent from "./NavigationMenu";
 import RobotControlsContent from "./RobotControlsContent";
+import HarvestCountdown from "./HarvestCountdown";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -77,12 +78,12 @@ const Dashboard: React.FC = () => {
   const [showRobotControls, setShowRobotControls] = useState(false);
   const [cameraPosition, setCameraPosition] = useState<Position>({ x: 50, y: 50 });
 
-  // Widget visibility state
+  // Widget visibility state - updated to only show metrics by default
   const [widgetToggles, setWidgetToggles] = useState<WidgetToggleState>({
     metrics: true,
-    tasks: true,
-    activity: true,
-    graph: true,
+    tasks: false,
+    activity: false,
+    graph: false,
     minimap: true
   });
 
@@ -147,8 +148,11 @@ const Dashboard: React.FC = () => {
       
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-3 md:px-6">
-        <Header unitId="AB-001" />
-        <NavigationMenuComponent />
+        <Header unitId="AB-001" startDate="Apr 1, 2025" cropName="Pink Oyster" />
+        <div className="flex items-center gap-4">
+          <HarvestCountdown harvestDate="2025-04-15T00:00:00" />
+          <NavigationMenuComponent />
+        </div>
       </div>
       
       {/* User Name Prompt */}

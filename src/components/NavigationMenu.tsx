@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { getUserName } from "./UserNamePrompt";
 import { UserRound } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const NavigationMenuComponent: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
@@ -17,7 +16,8 @@ const NavigationMenuComponent: React.FC = () => {
   useEffect(() => {
     // Get the username on mount and also set up a listener for storage changes
     const updateUserName = () => {
-      setUserName(getUserName());
+      const name = getUserName();
+      setUserName(name);
     };
     
     updateUserName();
@@ -33,15 +33,15 @@ const NavigationMenuComponent: React.FC = () => {
   }, []);
 
   return (
-    <NavigationMenu className="md:flex">
+    <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger className="bg-primary/10 px-3 py-1 font-medium flex items-center gap-2">
             <UserRound size={16} />
-            {userName || "Guest"}
+            <span className="max-w-[150px] truncate">{userName || "Guest"}</span>
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="w-[200px] p-2">
+            <div className="w-[200px] p-4">
               <div className="grid gap-2">
                 <div className="font-medium">
                   {userName ? `Welcome, ${userName}` : "Welcome, Guest"}
