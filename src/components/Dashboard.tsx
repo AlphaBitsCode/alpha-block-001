@@ -7,9 +7,13 @@ import ActivityLogWidget from "./ActivityLogWidget";
 import MiniGraph from "./MiniGraph";
 import CareTaskWidget from "./CareTaskWidget";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Fan, Droplets, AlertCircle, ThermometerIcon, Check } from "lucide-react";
+import { Fan, Droplets, AlertCircle, ThermometerIcon, Check, ListOrdered, GanttChart, Settings, LineChart } from "lucide-react";
 import ControlPanel from "./ControlPanel";
 import MetricsOverlay from "./MetricsOverlay";
+import TelemetryWidget from "./TelemetryWidget";
+import VerticalToolbar, { WidgetToggleState } from "./VerticalToolbar";
+import { useDraggable, Position } from "@/hooks/use-draggable";
+import WidgetIcon from "./WidgetIcon";
 
 // Sample data - in a real app this would come from an API
 const mockActivityLogs = [
@@ -50,7 +54,7 @@ const mockActivityLogs = [
   },
 ];
 
-// Tropical weather mock data for Pink Oyster mushrooms
+// Mock graph data
 const mockGraphData = [
   { time: "00:00", temperature: 27, humidity: 85 },
   { time: "04:00", temperature: 26, humidity: 82 },
@@ -63,21 +67,37 @@ const mockGraphData = [
 
 const Dashboard: React.FC = () => {
   const isMobile = useIsMobile();
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isHumidifierOn, setIsHumidifierOn] = useState(true);
   const [isLightOn, setIsLightOn] = useState(false);
 
-  // Initial widget positions - properly spaced to avoid overlapping
-  const [widgetPositions, setWidgetPositions] = useState({
-    metrics: { x: isMobile ? 10 : 20, y: 80 },
-    care: { x: isMobile ? 10 : 20, y: 330 },
-    activity: { x: isMobile ? 10 : window.innerWidth - 360, y: 80 },
-    graph: { x: isMobile ? 10 : window.innerWidth - 360, y: 360 }
+  // Widget visibility state
+  const [widgetToggles, setWidgetToggles] = useState<WidgetToggleState>({
+    metrics: true,
+    tasks: true,
+    activity: true,
+    graph: true
   });
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  // Draggable hooks for each widget
+  const metricsWidget = useDraggable({ 
+    initialPosition: { x: 20, y: 80 },
+    bounds: { top: 70, left: 10 }
+  });
+  
+  const tasksWidget = useDraggable({ 
+    initialPosition: { x: 20, y: 320 },
+    bounds: { top: 70, left: 10 }
+  });
+  
+  const activityWidget = useDraggable({ 
+    initialPosition: { x: window.innerWidth - 330, y: 80 },
+    bounds: { top: 70, right: window.innerWidth - 10 }
+  });
+  
+  const graphWidget = useDraggable({ 
+    initialPosition: { x: window.innerWidth - 330, y: 320 },
+    bounds: { top: 70, right: window.innerWidth - 10 }
+  });
 
   const toggleHumidifier = () => {
     setIsHumidifierOn(!isHumidifierOn);
@@ -116,6 +136,12 @@ const Dashboard: React.FC = () => {
         toggleLight={toggleLight}
       />
       
+      {/* Vertical Toolbar */}
+      <VerticalToolbar 
+        widgetToggles={widgetToggles} 
+        setWidgetToggles={setWidgetToggles} 
+      />
+      
       {/* HUD-style Metrics Overlay */}
       <MetricsOverlay 
         temperature={metricsData.temperature}
@@ -123,42 +149,107 @@ const Dashboard: React.FC = () => {
         historyData={mockGraphData}
       />
       
-      {/* Telemetry Control Button (Mobile) */}
-      {isMobile && (
-        <button
-          className="fixed bottom-4 left-4 z-50 w-12 h-12 rounded-full glassmorphism flex items-center justify-center"
-          onClick={toggleCollapse}
-        >
-          <span className="text-white text-xl">
-            {isCollapsed ? "+" : "−"}
-          </span>
-        </button>
-      )}
-      
-      {/* Desktop widgets with fixed positions */}
+      {/* Draggable Widgets */}
       {!isMobile && (
         <>
-          <div className="fixed top-20 left-4 z-40">
-            <ConsolidatedMetricsWidget {...metricsData} />
-            <div className="mt-4">
-              <CareTaskWidget />
-            </div>
-          </div>
+          {/* Metrics Widget */}
+          {metricsWidget.isCollapsed && widgetToggles.metrics ? (
+            <WidgetIcon 
+              icon={Settings} 
+              label="Metrics" 
+              onClick={metricsWidget.toggleCollapse}
+              position={metricsWidget.position}
+            />
+          ) : widgetToggles.metrics && (
+            <TelemetryWidget 
+              title="System Metrics" 
+              icon={<Settings size={18} />}
+              position={metricsWidget.position}
+              isCollapsed={!widgetToggles.metrics}
+              onMinimizeClick={metricsWidget.toggleCollapse}
+              onMouseDown={metricsWidget.onMouseDown}
+              ref={metricsWidget.dragRef}
+            >
+              <ConsolidatedMetricsWidget {...metricsData} />
+            </TelemetryWidget>
+          )}
           
-          <div className="fixed top-20 right-4 z-40">
-            <ActivityLogWidget logs={mockActivityLogs} />
-          </div>
+          {/* Tasks Widget */}
+          {tasksWidget.isCollapsed && widgetToggles.tasks ? (
+            <WidgetIcon 
+              icon={GanttChart} 
+              label="Tasks" 
+              onClick={tasksWidget.toggleCollapse}
+              position={tasksWidget.position}
+            />
+          ) : widgetToggles.tasks && (
+            <TelemetryWidget 
+              title="Care Tasks" 
+              icon={<GanttChart size={18} />}
+              position={tasksWidget.position}
+              isCollapsed={!widgetToggles.tasks}
+              onMinimizeClick={tasksWidget.toggleCollapse}
+              onMouseDown={tasksWidget.onMouseDown}
+              ref={tasksWidget.dragRef}
+            >
+              <CareTaskWidget />
+            </TelemetryWidget>
+          )}
+          
+          {/* Activity Widget */}
+          {activityWidget.isCollapsed && widgetToggles.activity ? (
+            <WidgetIcon 
+              icon={ListOrdered} 
+              label="Activity Log" 
+              onClick={activityWidget.toggleCollapse}
+              position={activityWidget.position}
+            />
+          ) : widgetToggles.activity && (
+            <TelemetryWidget 
+              title="Activity Log" 
+              icon={<ListOrdered size={18} />}
+              position={activityWidget.position}
+              isCollapsed={!widgetToggles.activity}
+              onMinimizeClick={activityWidget.toggleCollapse}
+              onMouseDown={activityWidget.onMouseDown}
+              ref={activityWidget.dragRef}
+            >
+              <ActivityLogWidget logs={mockActivityLogs} />
+            </TelemetryWidget>
+          )}
+          
+          {/* Graph Widget */}
+          {graphWidget.isCollapsed && widgetToggles.graph ? (
+            <WidgetIcon 
+              icon={LineChart} 
+              label="Performance Graph" 
+              onClick={graphWidget.toggleCollapse}
+              position={graphWidget.position}
+            />
+          ) : widgetToggles.graph && (
+            <TelemetryWidget 
+              title="Performance Graph" 
+              icon={<LineChart size={18} />}
+              position={graphWidget.position}
+              isCollapsed={!widgetToggles.graph}
+              onMinimizeClick={graphWidget.toggleCollapse}
+              onMouseDown={graphWidget.onMouseDown}
+              ref={graphWidget.dragRef}
+              widthClass="w-96"
+            >
+              <MiniGraph data={mockGraphData} />
+            </TelemetryWidget>
+          )}
         </>
       )}
       
-      {/* Mobile Widgets */}
+      {/* Mobile Widgets (simplified) */}
       {isMobile && (
-        <div 
-          className={`fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4 transition-transform duration-300 ${isCollapsed ? "translate-x-full" : "translate-x-0"}`}
-        >
-          <ConsolidatedMetricsWidget {...metricsData} />
-          <CareTaskWidget />
-          <ActivityLogWidget logs={mockActivityLogs} />
+        <div className="fixed top-20 right-4 bottom-4 z-40 w-80 flex flex-col space-y-4 overflow-y-auto pb-4">
+          {widgetToggles.metrics && <ConsolidatedMetricsWidget {...metricsData} />}
+          {widgetToggles.tasks && <CareTaskWidget />}
+          {widgetToggles.activity && <ActivityLogWidget logs={mockActivityLogs} />}
+          {widgetToggles.graph && <MiniGraph data={mockGraphData} />}
         </div>
       )}
     </div>
